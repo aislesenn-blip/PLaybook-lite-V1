@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { saveParentData } from '../../lib/supabaseClient';
-import { ArrowRightIcon, DevicePhoneMobileIcon, StarIcon, LockClosedIcon, ShareIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { ArrowRightIcon, DevicePhoneMobileIcon, StarIcon, LockClosedIcon, ShareIcon, PlusIcon, ArrowUpOnSquareIcon } from '@heroicons/react/24/solid';
 import QRCode from 'react-qr-code';
 
 const HeroSection = () => {
@@ -10,6 +10,7 @@ const HeroSection = () => {
   const [isDesktop, setIsDesktop] = useState(true);
   const [isIOS, setIsIOS] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showIOSInstall, setShowIOSInstall] = useState(false);
 
   useEffect(() => {
     // Detect environment
@@ -118,24 +119,34 @@ const HeroSection = () => {
           >
             <div className="text-xl font-medium text-emerald-400">Welcome to Playbook.</div>
 
-            {/* Smart Download */}
+            {/* Smart Download Logic */}
             {isDesktop ? (
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-white p-2 rounded-lg">
                   <QRCode value={window.location.href} size={128} />
                 </div>
-                <span className="text-sm text-slate-300">Scan to Install on Mobile</span>
+                <span className="text-sm text-slate-300">Scan to install on your phone</span>
               </div>
             ) : isIOS ? (
-              <div className="flex flex-col items-center gap-3 text-center text-sm text-slate-300 bg-white/5 p-4 rounded-xl border border-white/10">
-                <p className="flex items-center gap-2">
-                  Tap <ShareIcon className="h-5 w-5 text-blue-400" /> <span className="font-bold text-white">Share</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  Then select <PlusIcon className="h-5 w-5 text-white" /> <span className="font-bold text-white">Add to Home Screen</span>
-                </p>
-                <div className="mt-2 text-xs opacity-50">to install the app</div>
-              </div>
+              <>
+                {!showIOSInstall ? (
+                   <button
+                    onClick={() => setShowIOSInstall(true)}
+                    className="flex items-center gap-2 rounded-full bg-white text-slate-900 px-8 py-3 font-bold shadow-lg transition-all hover:bg-slate-100"
+                  >
+                    <ArrowUpOnSquareIcon className="h-5 w-5" /> Install on iPhone
+                  </button>
+                ) : (
+                  <div className="flex flex-col items-center gap-3 text-center text-sm text-slate-300 bg-white/5 p-4 rounded-xl border border-white/10">
+                    <p className="flex items-center gap-2">
+                      Tap the Share button <ArrowUpOnSquareIcon className="h-5 w-5 text-blue-400" />
+                    </p>
+                    <p className="flex items-center gap-2">
+                      Scroll down and tap 'Add to Home Screen' <PlusIcon className="h-5 w-5 text-white" />
+                    </p>
+                  </div>
+                )}
+              </>
             ) : (
                <button
                 onClick={handleInstall}

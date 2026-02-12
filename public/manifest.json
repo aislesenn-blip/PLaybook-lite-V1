@@ -1,19 +1,18 @@
 {
   "name": "Playbook Lite",
   "short_name": "Playbook",
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#1E1B4B",
-  "theme_color": "#D97706",
-  "description": "Give your child the confidence to speak clearly.",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
   "icons": [
     {
-      "src": "/icons/pwa-192x192.png",
+      "src": "/pwa-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/pwa-512x512.png",
+      "src": "/pwa-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
