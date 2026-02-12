@@ -1,9 +1,11 @@
 // src/lib/soundManager.ts
 
-export const playSound = async (lang: string, dayId: number, type: 'sponge' | 'echo' | 'hunter' | 'performer' | 'success') => {
+export const playSound = async (lang: string, dayId: number, type: 'sponge' | 'echo' | 'hunter' | 'performer' | 'success' | 'try_again') => {
   let path = '';
   if (type === 'success') {
-    path = `/src/assets/audio/success.mp3`; // Or specific success sound
+    path = `/src/assets/audio/success.mp3`;
+  } else if (type === 'try_again') {
+    path = `/src/assets/audio/try_again.mp3`;
   } else {
     path = `/src/assets/audio/${lang}/day${dayId}_${type}.mp3`;
   }
