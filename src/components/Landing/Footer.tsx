@@ -6,8 +6,8 @@ const Footer = () => {
           &copy; {new Date().getFullYear()} Playbook Lite. All Rights Reserved.
         </div>
         <div className="flex gap-6 text-sm font-medium">
-          <a href="#" className="hover:text-amber-500 transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-amber-500 transition-colors">Terms of Service</a>
+          <a href="/privacy" className="hover:text-amber-500 transition-colors">Privacy Policy</a>
+          <a href="/terms" className="hover:text-amber-500 transition-colors">Terms of Service</a>
           <a
             href="https://wa.me/255745780988"
             target="_blank"

@@ -37,6 +37,7 @@ const AppView = () => {
   }, [navigate]);
 
   const handleOnboardingComplete = (name: string, language: string) => {
+    // Save to localStorage immediately
     localStorage.setItem('childName', name);
     localStorage.setItem('childLang', language);
     setChildName(name);
@@ -81,34 +82,30 @@ const AppView = () => {
       <header className="mb-12 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-text-main">
-            Hello, <span className="text-brand">{childName}</span>!
+            Good Morning, <span className="text-brand">{childName || 'Champion'}</span>
           </h1>
           <p className="text-slate-500">{currentCurriculum.level_name}</p>
         </div>
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 text-xl font-bold text-slate-600">
-          {childName[0]}
+          {childName ? childName[0] : 'C'}
         </div>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {currentCurriculum.days.map((day, index) => {
+        {currentCurriculum.days.map((day: any, index: number) => {
           const isCompleted = completedDays.includes(day.id);
-          // For testing, let's unlock all or logic: unlock if previous completed.
-          // Actually, "Playbook Lite" implies users might want to jump around, but typically it's sequential.
-          // Let's enforce sequential for "The Ritual".
-          // Except Day 1 is always unlocked.
-
-          const lockedState = index === 0 ? false : !completedDays.includes(currentCurriculum.days[index - 1].id);
+          // Unlock previous day or Day 1
+          const isLocked = index === 0 ? false : !completedDays.includes(currentCurriculum.days[index - 1].id);
 
           return (
             <motion.button
               key={day.id}
-              disabled={lockedState}
-              onClick={() => !lockedState && handleDaySelect(day)}
-              whileHover={!lockedState ? { scale: 1.02 } : {}}
-              whileTap={!lockedState ? { scale: 0.98 } : {}}
-              className={`relative flex items-center justify-between overflow-hidden rounded-2xl border p-6 text-left transition-all ${
-                lockedState
+              disabled={isLocked}
+              onClick={() => !isLocked && handleDaySelect(day)}
+              whileHover={!isLocked ? { scale: 1.02 } : {}}
+              whileTap={!isLocked ? { scale: 0.98 } : {}}
+              className={`relative flex w-full items-center justify-between overflow-hidden rounded-2xl border p-6 text-left transition-all ${
+                isLocked
                   ? 'cursor-not-allowed border-slate-100 bg-slate-50 opacity-60'
                   : isCompleted
                     ? 'border-emerald-200 bg-emerald-50 hover:border-emerald-300'
@@ -128,7 +125,7 @@ const AppView = () => {
               <div className="z-10">
                 {isCompleted ? (
                   <CheckCircleIcon className="h-8 w-8 text-emerald-500" />
-                ) : lockedState ? (
+                ) : isLocked ? (
                   <LockClosedIcon className="h-6 w-6 text-slate-300" />
                 ) : (
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-white shadow-lg shadow-brand/30">

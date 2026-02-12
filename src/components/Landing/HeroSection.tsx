@@ -106,7 +106,7 @@ const HeroSection = () => {
               type="submit"
               className="group flex items-center justify-center gap-2 rounded-full bg-amber-600 px-8 py-4 font-bold text-white transition-all hover:bg-amber-500 hover:shadow-[0_0_20px_rgba(217,119,6,0.5)]"
             >
-              Join Inner Circle <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              Access Playbook <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </button>
           </motion.form>
         ) : (
@@ -115,7 +115,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="mt-12 flex flex-col items-center gap-6 rounded-2xl border border-emerald-500/30 bg-emerald-900/20 p-8 backdrop-blur-xl"
           >
-            <div className="text-xl font-medium text-emerald-400">Welcome to the Inner Circle.</div>
+            <div className="text-xl font-medium text-emerald-400">Welcome to Playbook.</div>
 
             {/* Smart Download */}
             {isDesktop ? (
@@ -169,8 +169,7 @@ const HeroSection = () => {
                 <h3 className="text-lg font-bold text-white">Playbook Plus</h3>
                 <LockClosedIcon className="h-4 w-4 text-slate-500" />
               </div>
-              <p className="mt-2 text-sm text-slate-400">Advanced vocabulary & logic.</p>
-              <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Coming Soon</div>
+              <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Unreleased</div>
             </div>
 
             {/* Playbook Pro */}
@@ -179,7 +178,6 @@ const HeroSection = () => {
                 <h3 className="text-lg font-bold text-white">Playbook Pro</h3>
                 <LockClosedIcon className="h-4 w-4 text-slate-500" />
               </div>
-              <p className="mt-2 text-sm text-slate-400">Mastery & Leadership.</p>
               <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Unreleased</div>
             </div>
 
@@ -189,18 +187,10 @@ const HeroSection = () => {
                 <h3 className="text-lg font-bold text-white">Playbook X</h3>
                 <LockClosedIcon className="h-4 w-4 text-slate-500" />
               </div>
-              <p className="mt-2 text-sm text-slate-400">Enterprise Only.</p>
-              <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Enterprise</div>
+              <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Enterprise Only</div>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Feedback Quote */}
-      <div className="w-full bg-slate-950 py-16 text-center text-white">
-        <blockquote className="mx-auto max-w-4xl px-6 text-2xl font-light italic leading-relaxed md:text-3xl">
-          "I didn't just buy an app. I unlocked Jasmine's voice."
-        </blockquote>
       </div>
 
     </div>
