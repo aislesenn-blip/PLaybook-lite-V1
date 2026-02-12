@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { saveParentData } from '../../lib/supabaseClient';
-import { ArrowRightIcon, DevicePhoneMobileIcon, QrCodeIcon, StarIcon, LockClosedIcon } from '@heroicons/react/24/solid';
+import { ArrowRightIcon, DevicePhoneMobileIcon, StarIcon, LockClosedIcon, ShareIcon, PlusIcon } from '@heroicons/react/24/solid';
+import QRCode from 'react-qr-code';
 
 const HeroSection = () => {
   const [mobile, setMobile] = useState('');
@@ -120,15 +121,20 @@ const HeroSection = () => {
             {/* Smart Download */}
             {isDesktop ? (
               <div className="flex flex-col items-center gap-2">
-                <div className="rounded-lg bg-white p-2">
-                  <QrCodeIcon className="h-32 w-32 text-slate-900" />
+                <div className="bg-white p-2 rounded-lg">
+                  <QRCode value={window.location.href} size={128} />
                 </div>
-                <span className="text-sm text-slate-300">Scan to Install</span>
+                <span className="text-sm text-slate-300">Scan to Install on Mobile</span>
               </div>
             ) : isIOS ? (
-              <div className="flex flex-col items-center gap-2 text-center text-sm text-slate-300">
-                <p>Tap <span className="font-bold text-white">Share</span> then <span className="font-bold text-white">Add to Home Screen</span></p>
-                <div className="h-8 w-8 animate-bounce rounded-full bg-white/10 p-1">⬇️</div>
+              <div className="flex flex-col items-center gap-3 text-center text-sm text-slate-300 bg-white/5 p-4 rounded-xl border border-white/10">
+                <p className="flex items-center gap-2">
+                  Tap <ShareIcon className="h-5 w-5 text-blue-400" /> <span className="font-bold text-white">Share</span>
+                </p>
+                <p className="flex items-center gap-2">
+                  Then select <PlusIcon className="h-5 w-5 text-white" /> <span className="font-bold text-white">Add to Home Screen</span>
+                </p>
+                <div className="mt-2 text-xs opacity-50">to install the app</div>
               </div>
             ) : (
                <button
