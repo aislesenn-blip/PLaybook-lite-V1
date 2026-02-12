@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LockClosedIcon } from '@heroicons/react/24/solid';
-import { unlockPremium } from '../../lib/subscriptionLock';
+import { LockClosedIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
+import { verifyLicenseKey } from '../../lib/subscriptionLock';
 
 interface LockScreenProps {
   childName?: string;
@@ -10,13 +10,23 @@ interface LockScreenProps {
 
 const LockScreen: React.FC<LockScreenProps> = ({ childName = "Jasmine", onUnlock }) => {
   const [key, setKey] = useState('');
-  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleUnlock = () => {
-    if (unlockPremium(key)) {
+  const handleUnlock = async () => {
+    if (!key.trim()) return;
+
+    setLoading(true);
+    setErrorMsg('');
+
+    const result = await verifyLicenseKey(key.trim());
+
+    setLoading(false);
+
+    if (result.success) {
       onUnlock();
     } else {
-      setError(true);
+      setErrorMsg(result.message);
     }
   };
 
@@ -53,17 +63,19 @@ const LockScreen: React.FC<LockScreenProps> = ({ childName = "Jasmine", onUnlock
               type="text"
               placeholder="Enter License Key"
               value={key}
-              onChange={(e) => { setKey(e.target.value); setError(false); }}
-              className={`w-full rounded-xl border bg-slate-900/50 px-4 py-4 text-center text-white placeholder-slate-500 outline-none focus:ring-2 ${error ? 'border-red-500 ring-red-500/20' : 'border-white/10 focus:border-brand focus:ring-brand/20'}`}
+              onChange={(e) => { setKey(e.target.value); setErrorMsg(''); }}
+              disabled={loading}
+              className={`w-full rounded-xl border bg-slate-900/50 px-4 py-4 text-center text-white placeholder-slate-500 outline-none focus:ring-2 ${errorMsg ? 'border-red-500 ring-red-500/20' : 'border-white/10 focus:border-brand focus:ring-brand/20'} ${loading ? 'opacity-50' : ''}`}
             />
-            {error && <p className="mt-2 text-sm text-red-400">Invalid License Key</p>}
+            {errorMsg && <p className="mt-2 text-sm text-red-400">{errorMsg}</p>}
           </div>
 
           <button
             onClick={handleUnlock}
-            className="w-full rounded-xl bg-white/10 py-3 font-semibold text-white transition-all hover:bg-white/20"
+            disabled={loading || !key.trim()}
+            className="flex w-full items-center justify-center rounded-xl bg-white/10 py-3 font-semibold text-white transition-all hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Unlock
+            {loading ? <ArrowPathIcon className="h-5 w-5 animate-spin" /> : 'Unlock'}
           </button>
         </div>
       </motion.div>
