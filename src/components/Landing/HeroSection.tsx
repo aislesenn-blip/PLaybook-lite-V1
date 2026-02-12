@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { saveParentData } from '../../lib/supabaseClient';
-import { ArrowRightIcon, DevicePhoneMobileIcon, StarIcon, LockClosedIcon, ShareIcon, PlusIcon, ArrowUpOnSquareIcon } from '@heroicons/react/24/solid';
+import { ArrowRightIcon, DevicePhoneMobileIcon, StarIcon, LockClosedIcon, PlusIcon, ArrowUpOnSquareIcon } from '@heroicons/react/24/solid';
 import QRCode from 'react-qr-code';
 
 const HeroSection = () => {
