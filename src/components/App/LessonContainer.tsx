@@ -28,25 +28,25 @@ const LessonContainer: React.FC<LessonContainerProps> = ({ day, lang, onLessonCo
     }
   }, [day]);
 
-  const nextPhase = () => {
-    switch (phase) {
-      case 'sponge':
-        setPhase('echo');
-        break;
-      case 'echo':
-        setPhase('hunter');
-        break;
-      case 'hunter':
-        setPhase('performer');
-        break;
-      case 'performer':
-        onLessonComplete();
-        break;
-    }
+  const handleNextPhase = () => {
+    setPhase((currentPhase) => {
+      switch (currentPhase) {
+        case 'sponge':
+          return 'echo';
+        case 'echo':
+          return 'hunter';
+        case 'hunter':
+          return 'performer';
+        case 'performer':
+          return currentPhase; // Should be handled by onComplete
+        default:
+          return 'sponge';
+      }
+    });
   };
 
-  const getPhaseIndex = () => {
-    return ['sponge', 'echo', 'hunter', 'performer'].indexOf(phase);
+  const getPhaseIndex = (p: Phase) => {
+    return ['sponge', 'echo', 'hunter', 'performer'].indexOf(p);
   };
 
   return (
@@ -59,33 +59,35 @@ const LessonContainer: React.FC<LessonContainerProps> = ({ day, lang, onLessonCo
       )}
 
       {/* Top Bar */}
-      <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-4 md:p-6">
-        <button
+      <div className="absolute top-0 left-0 z-50 flex w-full items-center justify-between p-4 md:p-6 pointer-events-none">
+        <motion.button
           onClick={onExit}
-          className="rounded-full bg-white/50 p-2 text-slate-500 backdrop-blur-sm transition-colors hover:bg-white hover:text-slate-900"
+          whileTap={{ scale: 0.9 }}
+          className="pointer-events-auto rounded-full bg-white/50 p-3 text-slate-500 backdrop-blur-sm transition-colors hover:bg-white hover:text-slate-900 active:bg-slate-100"
         >
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
-        </button>
+        </motion.button>
 
         {/* Progress Dots */}
-        <div className="flex gap-2">
-          {[0, 1, 2, 3].map((i) => (
+        <div className="flex gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm">
+          {['sponge', 'echo', 'hunter', 'performer'].map((p, i) => (
             <div
-              key={i}
-              className={`h-2 w-2 rounded-full transition-all duration-500 ${
-                i <= getPhaseIndex() ? 'w-8 bg-brand' : 'bg-slate-200'
+              key={p}
+              className={`h-2.5 rounded-full transition-all duration-500 ${
+                i <= getPhaseIndex(phase)
+                  ? 'w-8 bg-brand shadow-[0_0_10px_rgba(217,119,6,0.5)]'
+                  : 'w-2.5 bg-slate-200/50'
               }`}
             />
           ))}
         </div>
 
-        <div className="w-10" /> {/* Spacer */}
+        <div className="w-12" /> {/* Spacer for symmetry */}
       </div>
 
       {/* Main Content Area */}
-      {/* Ensure content is above physics (z-10) */}
       <AnimatePresence mode="wait">
         <motion.div
           key={phase}
@@ -93,24 +95,18 @@ const LessonContainer: React.FC<LessonContainerProps> = ({ day, lang, onLessonCo
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
-          className="relative z-10 h-full w-full pt-16 pointer-events-none" // pointer-events-none to let clicks pass to physics?
-          // Wait, if I set pointer-events-none, buttons inside phases won't work.
-          // I need to set pointer-events-auto on interactive elements inside phases.
-          // Or just let physics capture clicks if no UI element is clicked.
-          // Matter.js MouseConstraint attaches to canvas.
-          // If the canvas is z-0 and this div is z-10, clicks on this div will block canvas.
-          // I should make this div transparent to clicks where empty.
+          className="relative z-10 h-full w-full pt-20" // Add padding top to clear header
         >
           {/* Re-enable pointer events for the actual phase content wrapper */}
           <div className="h-full w-full pointer-events-auto">
             {phase === 'sponge' && (
-              <PhaseSponge day={day} lang={lang} onComplete={nextPhase} />
+              <PhaseSponge day={day} lang={lang} onComplete={handleNextPhase} />
             )}
             {phase === 'echo' && (
-              <PhaseEcho day={day} lang={lang} onComplete={nextPhase} />
+              <PhaseEcho day={day} lang={lang} onComplete={handleNextPhase} />
             )}
             {phase === 'hunter' && (
-              <PhaseHunter day={day} lang={lang} onComplete={nextPhase} />
+              <PhaseHunter day={day} lang={lang} onComplete={handleNextPhase} />
             )}
             {phase === 'performer' && (
               <PhasePerformer day={day} onComplete={onLessonComplete} />
