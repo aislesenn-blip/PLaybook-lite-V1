@@ -77,8 +77,10 @@ const fetchWithFallback = async (canonicalUrl: string): Promise<Response | null>
   const variations = [
     canonicalUrl,                  // 1. Try clean .mp3
     `${canonicalUrl}.mp3`,         // 2. Try .mp3.mp3
-    `${canonicalUrl}.mpeg`,        // 3. Try .mp3.mpeg
-    canonicalUrl.replace('.mp3', '.mpeg') // 4. Try replacing extension entirely
+    `${canonicalUrl}.mpeg`,        // 3. Try .mp3.mpeg (English Day 1 Sound)
+    canonicalUrl.replace('.mp3', '.mpeg'), // 4. Try replacing extension entirely
+    canonicalUrl.replace('.mp3', '.mp4'),  // 5. Try video container (.mp4) - CRITICAL FIX
+    `${canonicalUrl}.mp4`          // 6. Try .mp3.mp4 (Unlikely but safe)
   ];
 
   for (const url of variations) {

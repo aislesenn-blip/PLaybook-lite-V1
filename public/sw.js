@@ -1,5 +1,6 @@
 // Service Worker for Playbook Lite v1.0
 // Strategy: Smart Pre-caching for Day 1-5 + Network First (Dynamic)
+// "Omni-Format" Loader: Handles messy extensions (.mp3, .mpeg, .mp4, .mp3.mp3)
 
 const CACHE_NAME = 'playbook-assets-v1'; // MATCHING assetManager.ts
 
@@ -44,13 +45,16 @@ languages.forEach(lang => {
 });
 
 // Helper: Tries to fetch a URL with multiple extension variations
+// Mirrors assetManager.ts logic exactly
 const fetchWithFallback = async (canonicalUrl) => {
   // Variations to try, in order of likelihood based on audit
   const variations = [
     canonicalUrl,                  // 1. Try clean .mp3
     `${canonicalUrl}.mp3`,         // 2. Try .mp3.mp3
     `${canonicalUrl}.mpeg`,        // 3. Try .mp3.mpeg
-    canonicalUrl.replace('.mp3', '.mpeg') // 4. Try replacing extension entirely
+    canonicalUrl.replace('.mp3', '.mpeg'), // 4. Try replacing extension entirely
+    canonicalUrl.replace('.mp3', '.mp4'),  // 5. Try video container (.mp4) - CRITICAL FIX
+    `${canonicalUrl}.mp4`          // 6. Try .mp3.mp4
   ];
 
   for (const url of variations) {
@@ -69,7 +73,7 @@ const fetchWithFallback = async (canonicalUrl) => {
 
 // 2. INSTALL: Smart Cache with Graceful Degradation & Recursive Try-Chain
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing... Pre-caching critical assets.');
+  console.log('[SW] Installing... Pre-caching critical assets (Omni-Format Mode).');
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       // Instead of cache.addAll which fails atomically if ONE file is missing,
@@ -147,13 +151,8 @@ self.addEventListener('fetch', (event) => {
         return caches.match(event.request).then((response) => {
             if (response) return response;
 
-            // Optional: Return a specific fallback page for navigation requests if cache misses
-            // if (event.request.mode === 'navigate') {
-            //   return caches.match('/offline.html');
-            // }
-
-            // Note: We could also apply fetchWithFallback here for runtime requests,
-            // but since we pre-cache the critical path, we rely on that for now.
+            // Note: We could apply fetchWithFallback here too, but it's expensive for runtime.
+            // We rely on the install phase to capture the correct files.
         });
       })
   );
