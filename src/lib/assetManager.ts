@@ -3,13 +3,14 @@
 // Ensures "Silicon Valley" level onboarding: No buffering, 100% offline.
 
 const CACHE_NAME = 'playbook-assets-v1';
+const BASE_URL = '/assets/audio/';
 
 // Base system files needed for any language
 // These are assumed to be in the `public/assets/audio/system/` folder
 const SYSTEM_ASSETS = [
-  '/assets/audio/system/welcome_generic.mp3',
-  '/assets/audio/system/success_high.mp3',
-  '/assets/audio/system/try_again.mp3',
+  `${BASE_URL}system/welcome_generic.mp3`,
+  `${BASE_URL}system/success_high.mp3`,
+  `${BASE_URL}system/try_again.mp3`,
 ];
 
 // Generates the full list of URLs for a specific language (Day 1-15)
@@ -19,10 +20,6 @@ export const getLanguageAssets = (lang: string): string[] => {
   const dayCount = 15; // Production Requirement: Level 1 (First 15 Days)
 
   // Mapping language names to folder codes (if needed)
-  // 'english' -> 'en', 'swahili' -> 'sw', 'french' -> 'fr'
-  // But our curriculum usually uses 'en', 'sw', 'fr' directly or handled by soundManager.
-  // Assuming lang passed here matches the folder name (e.g. 'en' or 'english').
-  // Let's normalize it to be safe based on prompt context (folders are /en, /sw, /fr).
   let langCode = lang;
   if (lang === 'english') langCode = 'en';
   if (lang === 'swahili') langCode = 'sw';
@@ -31,7 +28,7 @@ export const getLanguageAssets = (lang: string): string[] => {
   for (let i = 1; i <= dayCount; i++) {
     phases.forEach((phase) => {
       // e.g., /assets/audio/en/day1_sponge.mp3
-      assets.push(`/assets/audio/${langCode}/day${i}_${phase}.mp3`);
+      assets.push(`${BASE_URL}${langCode}/day${i}_${phase}.mp3`);
     });
   }
 
