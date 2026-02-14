@@ -1,131 +1,243 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { saveParentData } from '../../lib/supabaseClient';
+import { ArrowRightIcon, DevicePhoneMobileIcon, StarIcon, LockClosedIcon, PlusIcon, ArrowUpOnSquareIcon } from '@heroicons/react/24/solid';
+import QRCode from 'react-qr-code';
 
 const HeroSection = () => {
-  const [report, setReport] = useState<string>('Running diagnostics...');
+  const [mobile, setMobile] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [isIOS, setIsIOS] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showIOSInstall, setShowIOSInstall] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    const runDiagnostics = async () => {
-      let log = "=== DIAGNOSTIC REPORT ===\n";
+    // Detect environment
+    const ua = navigator.userAgent;
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    setIsDesktop(!isMobile);
+    setIsIOS(/iPhone|iPad|iPod/i.test(ua));
 
-      // 1. BROWSER COMPATIBILITY AUDIT
-      log += "\n[BROWSER]\n";
-      log += `- User Agent: ${navigator.userAgent}\n`;
-      const audio = new Audio();
-      const mpegAudio = audio.canPlayType('audio/mpeg');
-      const mpegVideo = audio.canPlayType('video/mpeg');
-      log += `- Audio/MPEG Support: ${mpegAudio || 'NO'}\n`;
-      log += `- Video/MPEG Support: ${mpegVideo || 'NO'}\n`;
-
-      // 2. MANIFEST & ICON AUDIT
-      log += "\n[PWA TEST]\n";
-      try {
-        const manifestRes = await fetch('/manifest.json');
-        log += `- Manifest Fetch: ${manifestRes.status}\n`;
-        const contentType = manifestRes.headers.get('content-type');
-        log += `- Manifest Type: ${contentType}\n`;
-      } catch (e: any) {
-        log += `- Manifest Fetch: ERROR ${e.message}\n`;
-      }
-
-      try {
-        const iconRes = await fetch('/pwa-192x192.png');
-        log += `- Icon Fetch: ${iconRes.status}\n`;
-      } catch (e: any) {
-        log += `- Icon Fetch: ERROR ${e.message}\n`;
-      }
-
-      const manifestLink = document.querySelector('link[rel="manifest"]');
-      log += `- Manifest Link: ${manifestLink ? 'EXISTS' : 'MISSING'}\n`;
-
-      // Service Worker
-      log += `- Service Worker: ${navigator.serviceWorker?.controller ? 'Active' : 'Null'}\n`;
-
-      // 3. AUDIO PLAYBACK "FORCE" TEST & 5. FILE STRUCTURE
-      log += "\n[ASSET TEST]\n";
-
-      const testAudio = async (url: string, label: string) => {
-         log += `- ${label} URL: ${url}\n`;
-         try {
-            const res = await fetch(url);
-            log += `- ${label} Fetch: ${res.status}\n`;
-
-            if (!res.ok) {
-                log += `- ${label} Playback: SKIPPED (Fetch Failed)\n`;
-                return;
-            }
-
-            // Attempt Playback
-            await new Promise((resolve) => {
-                const sound = new Audio(url);
-                sound.volume = 0; // Mute
-
-                // Set a timeout to catch hanging loads
-                const timeoutId = setTimeout(() => {
-                     log += `- ${label} Playback: TIMEOUT (State: ${sound.readyState})\n`;
-                     resolve(true);
-                }, 4000);
-
-                sound.oncanplaythrough = () => {
-                    clearTimeout(timeoutId);
-                    log += `- ${label} Playback: SUCCESS (Can Play)\n`;
-                    resolve(true);
-                };
-
-                sound.onerror = () => {
-                    clearTimeout(timeoutId);
-                    const err = sound.error;
-                    let errMsg = 'Unknown Error';
-                    if (err) {
-                        switch (err.code) {
-                            case err.MEDIA_ERR_ABORTED: errMsg = 'Aborted'; break;
-                            case err.MEDIA_ERR_NETWORK: errMsg = 'Network'; break;
-                            case err.MEDIA_ERR_DECODE: errMsg = 'Decode'; break;
-                            case err.MEDIA_ERR_SRC_NOT_SUPPORTED: errMsg = 'Src Not Supported'; break;
-                            default: errMsg = `Code ${err.code}`;
-                        }
-                    }
-                    log += `- ${label} Playback: ERROR (${errMsg})\n`;
-                    resolve(false);
-                };
-
-                // Trigger load
-                sound.load();
-
-                // Attempt play to trigger NotSupportedError if load works but decoding fails immediately
-                const playPromise = sound.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        // Ignore NotAllowedError (user interaction required)
-                        if (error.name !== 'NotAllowedError') {
-                             // log += `- ${label} Playback Attempt: ${error.name}: ${error.message}\n`;
-                        }
-                    });
-                }
-            });
-
-         } catch (e: any) {
-            log += `- ${label} Fetch: NETWORK ERROR ${e.message}\n`;
-         }
-      };
-
-      await testAudio('/assets/audio/en/day1_sound.mp3.mpeg', 'Day 1 (.mpeg)');
-      await testAudio('/assets/audio/en/day10_hero.mp3.mp3', 'Day 10 (.mp3.mp3)');
-
-      setReport(log);
+    // Check if app is already running in standalone mode (installed)
+    const checkStandalone = () => {
+      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+      setIsStandalone(isStandaloneMode);
     };
 
-    runDiagnostics();
+    checkStandalone();
+    window.addEventListener('resize', checkStandalone); // Handle orientation changes/updates
+
+    // PWA Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+
+    return () => window.removeEventListener('resize', checkStandalone);
   }, []);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mobile.length > 5) {
+      await saveParentData(mobile);
+      setSubmitted(true);
+    }
+  };
+
+  const handleInstall = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        }
+        setDeferredPrompt(null);
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen w-full bg-black text-white p-4 font-mono text-xs overflow-auto">
-      <pre>{report}</pre>
-      <button
-        className="fixed bottom-4 right-4 bg-red-600 text-white px-4 py-2 rounded font-bold"
-        onClick={() => window.location.reload()}
-      >
-        RERUN TEST
-      </button>
+    <div className="relative min-h-screen w-full overflow-hidden bg-slate-900 text-white">
+      {/* Cinematic Background */}
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center opacity-60 transition-transform duration-[20s] hover:scale-105"
+        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80")' }}
+      />
+      <div className="absolute inset-0 z-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+
+      {/* Content */}
+      <div className="relative z-10 flex h-full flex-col items-center pt-24 pb-12 px-6 text-center">
+
+        {/* Logo */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="absolute top-8 left-8 font-serif text-2xl font-bold tracking-wider text-white"
+        >
+          Playbook Lite
+        </motion.div>
+
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="max-w-4xl text-5xl font-extrabold leading-tight tracking-tight md:text-7xl"
+        >
+          Give your child the <span className="text-amber-500">confidence</span> to speak clearly before the world asks them to.
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="mt-6 max-w-2xl text-xl leading-relaxed text-slate-300"
+        >
+          Playbook Lite is a daily 10-minute AI learning journey designed to build early language clarity and speaking confidence.
+        </motion.p>
+
+        {/* Input Mechanism */}
+        {!submitted ? (
+          <motion.form
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            onSubmit={handleSubmit}
+            className="mt-12 flex w-full max-w-md flex-col gap-4 md:flex-row"
+          >
+            <input
+              type="tel"
+              placeholder="Enter Parent Mobile Number"
+              className="flex-1 rounded-full border border-white/20 bg-white/10 px-6 py-4 text-white placeholder-white/50 backdrop-blur-md focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              required
+            />
+            <button
+              type="submit"
+              className="group flex items-center justify-center gap-2 rounded-full bg-amber-600 px-8 py-4 font-bold text-white transition-all hover:bg-amber-500 hover:shadow-[0_0_20px_rgba(217,119,6,0.5)]"
+            >
+              Access Playbook <ArrowRightIcon className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </button>
+          </motion.form>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mt-12 flex flex-col items-center gap-6 rounded-2xl border border-emerald-500/30 bg-emerald-900/20 p-8 backdrop-blur-xl"
+          >
+            <div className="text-xl font-medium text-emerald-400">Welcome to Playbook.</div>
+
+            {/* Smart Download Logic with Bulletproof Fallbacks */}
+            {isStandalone ? (
+              <a
+                href="/app"
+                className="flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
+              >
+                <DevicePhoneMobileIcon className="h-5 w-5" /> Open App
+              </a>
+            ) : isDesktop ? (
+              <div className="flex flex-col items-center gap-2">
+                <div className="bg-white p-2 rounded-lg">
+                  <QRCode value={window.location.href} size={128} />
+                </div>
+                <span className="text-sm text-slate-300">Scan to install on your phone</span>
+              </div>
+            ) : isIOS ? (
+              <>
+                {!showIOSInstall ? (
+                   <button
+                    onClick={() => setShowIOSInstall(true)}
+                    className="flex items-center gap-2 rounded-full bg-white text-slate-900 px-8 py-3 font-bold shadow-lg transition-all hover:bg-slate-100"
+                  >
+                    <ArrowUpOnSquareIcon className="h-5 w-5" /> Install on iPhone
+                  </button>
+                ) : (
+                  <div className="flex flex-col items-center gap-3 text-center text-sm text-slate-300 bg-white/5 p-4 rounded-xl border border-white/10">
+                    <p className="flex items-center gap-2">
+                      Tap the Share button <ArrowUpOnSquareIcon className="h-5 w-5 text-blue-400" />
+                    </p>
+                    <p className="flex items-center gap-2">
+                      Scroll down and tap 'Add to Home Screen' <PlusIcon className="h-5 w-5 text-white" />
+                    </p>
+                  </div>
+                )}
+              </>
+            ) : deferredPrompt ? (
+               <button
+                onClick={handleInstall}
+                className="flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
+              >
+                <DevicePhoneMobileIcon className="h-5 w-5" /> Download App
+              </button>
+            ) : (
+               <button
+                onClick={() => alert("Tap the browser options menu (⋮), then select 'Add to Home Screen'.")}
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-3 font-bold text-slate-300 transition-all hover:bg-white/10 hover:text-white"
+              >
+                <PlusIcon className="h-5 w-5" /> How to Install
+              </button>
+            )}
+
+            {!isStandalone && (
+              <a href="/app" className="text-sm text-white/50 underline hover:text-white">Continue in Browser</a>
+            )}
+          </motion.div>
+        )}
+      </div>
+
+      {/* The Ecosystem */}
+      <div className="relative w-full overflow-hidden bg-slate-900/80 py-16 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="mb-8 text-2xl font-bold tracking-tight text-white">The Playbook Family</h2>
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+            {/* Playbook Lite */}
+            <div className="min-w-[280px] shrink-0 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-slate-800 to-slate-900 p-6 shadow-xl shadow-amber-900/20">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white">Playbook Lite</h3>
+                <span className="rounded-full bg-emerald-500/20 px-2 py-1 text-xs font-bold text-emerald-400">ACTIVE</span>
+              </div>
+              <p className="mt-2 text-sm text-slate-400">The Voice Awakening.</p>
+              <div className="mt-4 flex gap-1 text-amber-500">
+                <StarIcon className="h-4 w-4" />
+                <StarIcon className="h-4 w-4" />
+                <StarIcon className="h-4 w-4" />
+              </div>
+            </div>
+
+            {/* Playbook Plus */}
+            <div className="min-w-[280px] shrink-0 rounded-2xl border border-white/5 bg-white/5 p-6 opacity-60 backdrop-blur-sm grayscale transition-all hover:opacity-80 hover:grayscale-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white">Playbook Plus</h3>
+                <LockClosedIcon className="h-4 w-4 text-slate-500" />
+              </div>
+              <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Unreleased</div>
+            </div>
+
+            {/* Playbook Pro */}
+            <div className="min-w-[280px] shrink-0 rounded-2xl border border-white/5 bg-white/5 p-6 opacity-40 backdrop-blur-sm grayscale">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white">Playbook Pro</h3>
+                <LockClosedIcon className="h-4 w-4 text-slate-500" />
+              </div>
+              <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Unreleased</div>
+            </div>
+
+             {/* Playbook X */}
+             <div className="min-w-[280px] shrink-0 rounded-2xl border border-white/5 bg-white/5 p-6 opacity-40 backdrop-blur-sm grayscale">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white">Playbook X</h3>
+                <LockClosedIcon className="h-4 w-4 text-slate-500" />
+              </div>
+              <div className="mt-4 rounded-full bg-white/10 px-3 py-1 text-xs text-white/50 w-fit">Enterprise Only</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
