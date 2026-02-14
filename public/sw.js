@@ -35,22 +35,39 @@ languages.forEach(lang => {
   for (let i = 1; i <= 5; i++) {
     phases.forEach(phase => {
       const mappedPhase = phaseMap[phase] || phase;
-
-      // Default: Double extension as per physical file structure audit
-      let filename = `day${i}_${mappedPhase}.mp3.mp3`;
-
-      // CRITICAL EXCEPTION: English Day 1 Sound has .mpeg extension
-      if (lang === 'en' && i === 1 && mappedPhase === 'sound') {
-        filename = `day${i}_${mappedPhase}.mp3.mpeg`;
-      }
-
-      // Strict path construction
+      // Use CANONICAL clean paths (like assetManager.ts)
+      // The installer will handle the messy extensions.
+      const filename = `day${i}_${mappedPhase}.mp3`;
       PRECACHE_URLS.push(`/assets/audio/${lang}/${filename}`);
     });
   }
 });
 
-// 2. INSTALL: Smart Cache with Graceful Degradation
+// Helper: Tries to fetch a URL with multiple extension variations
+const fetchWithFallback = async (canonicalUrl) => {
+  // Variations to try, in order of likelihood based on audit
+  const variations = [
+    canonicalUrl,                  // 1. Try clean .mp3
+    `${canonicalUrl}.mp3`,         // 2. Try .mp3.mp3
+    `${canonicalUrl}.mpeg`,        // 3. Try .mp3.mpeg
+    canonicalUrl.replace('.mp3', '.mpeg') // 4. Try replacing extension entirely
+  ];
+
+  for (const url of variations) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        console.log(`[SW] Found: ${url}`);
+        return response;
+      }
+    } catch (e) {
+      // Ignore network errors for variations, try next
+    }
+  }
+  return null;
+};
+
+// 2. INSTALL: Smart Cache with Graceful Degradation & Recursive Try-Chain
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing... Pre-caching critical assets.');
   event.waitUntil(
@@ -60,11 +77,14 @@ self.addEventListener('install', (event) => {
 
       const cachePromises = PRECACHE_URLS.map(async (url) => {
         try {
-          const response = await fetch(url);
-          if (!response.ok) {
-            console.warn(`[SW] Failed to fetch ${url} (Status: ${response.status}) - Skipping.`);
+          // Use the robust fallback logic
+          const response = await fetchWithFallback(url);
+          if (!response) {
+            console.warn(`[SW] Failed to fetch ${url} (All variations failed) - Skipping.`);
             return;
           }
+          // Store in cache under the CANONICAL URL
+          // This "masks" the messy extension from the app.
           return cache.put(url, response);
         } catch (error) {
           console.warn(`[SW] Network error caching ${url} - Skipping.`);
@@ -131,6 +151,9 @@ self.addEventListener('fetch', (event) => {
             // if (event.request.mode === 'navigate') {
             //   return caches.match('/offline.html');
             // }
+
+            // Note: We could also apply fetchWithFallback here for runtime requests,
+            // but since we pre-cache the critical path, we rely on that for now.
         });
       })
   );
