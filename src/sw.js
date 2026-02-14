@@ -157,3 +157,7 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// Injection point for Workbox (required by vite-plugin-pwa)
+// eslint-disable-next-line no-unused-vars
+console.log('Workbox Manifest:', self.__WB_MANIFEST);
