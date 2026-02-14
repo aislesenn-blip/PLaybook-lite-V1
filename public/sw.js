@@ -1,7 +1,7 @@
 // Service Worker for Playbook Lite v1.0
 // Strategy: Smart Pre-caching for Day 1-5 + Network First (Dynamic)
 
-const CACHE_NAME = 'playbook-lite-v1-cache-smart';
+const CACHE_NAME = 'playbook-assets-v1'; // MATCHING assetManager.ts
 
 // 1. DEFINE PRECACHE URLS (CRITICAL BATCH)
 // Includes App Shell, System Audio, and Content for Days 1-5

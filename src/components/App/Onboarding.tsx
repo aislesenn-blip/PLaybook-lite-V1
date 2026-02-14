@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import LanguageSetupModal from './LanguageSetupModal';
+import { getLanguageAssets, checkMissingAssets, downloadAssets } from '../../lib/assetManager';
 
 const languages = [
   { code: 'english', label: 'English', flag: '🇬🇧' },
@@ -15,15 +17,82 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [name, setName] = useState('');
   const [selectedLang, setSelectedLang] = useState(languages[0].code);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Asset Management State
+  const [showModal, setShowModal] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState<'checking' | 'downloading' | 'complete' | 'error'>('checking');
+  const [missingAssets, setMissingAssets] = useState<string[]>([]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim()) {
+    if (!name.trim()) return;
+
+    // Start Asset Check
+    setShowModal(true);
+    setStatus('checking');
+
+    try {
+      // 1. Generate URLs
+      const urls = getLanguageAssets(selectedLang);
+
+      // 2. Check Cache
+      const missing = await checkMissingAssets(urls);
+      setMissingAssets(missing);
+
+      if (missing.length === 0) {
+        // Already cached!
+        setStatus('complete');
+        // Short delay to show success
+        setTimeout(() => {
+          onComplete(name, selectedLang);
+        }, 1000);
+      } else {
+        // 3. Download
+        setStatus('downloading');
+        await downloadAssets(missing, (percent) => {
+          setProgress(percent);
+        });
+        setStatus('complete');
+        // Modal handles closing and we proceed
+      }
+    } catch (error) {
+      console.error("Asset download failed:", error);
+      setStatus('error');
+    }
+  };
+
+  const handleRetry = async () => {
+    setStatus('downloading');
+    try {
+      await downloadAssets(missingAssets, (percent) => {
+        setProgress(percent);
+      });
+      setStatus('complete');
+    } catch (error) {
+      console.error("Retry failed:", error);
+      setStatus('error');
+    }
+  };
+
+  const handleModalClose = () => {
+    if (status === 'complete') {
       onComplete(name, selectedLang);
     }
+    setShowModal(false);
   };
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-canvas px-6">
+
+      <LanguageSetupModal
+        isVisible={showModal}
+        lang={selectedLang}
+        progress={progress}
+        status={status}
+        onRetry={handleRetry}
+        onClose={handleModalClose}
+      />
+
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
