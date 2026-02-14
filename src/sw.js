@@ -33,16 +33,34 @@ const phaseMap = {
 };
 
 languages.forEach(lang => {
+  for (let i = 5; i <= 5; i++) { // Optimization: Only precache Day 1-5 loop if needed, but original code did 1-5
+     // Original code had loop 1..5, correcting my manual paste error if any.
+  }
+});
+
+// Re-implementing the loop correctly based on original file content
+PRECACHE_URLS.length = 0; // Reset to safe defaults + loop
+PRECACHE_URLS.push(
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/pwa-192x192.png',
+  '/pwa-512x512.png',
+  '/assets/audio/system/welcome_generic.mp3',
+  '/assets/audio/system/success_high.mp3',
+  '/assets/audio/system/try_again.mp3'
+);
+
+languages.forEach(lang => {
   for (let i = 1; i <= 5; i++) {
     phases.forEach(phase => {
       const mappedPhase = phaseMap[phase] || phase;
-      // Use CANONICAL clean paths (like assetManager.ts)
-      // The installer will handle the messy extensions.
       const filename = `day${i}_${mappedPhase}.mp3`;
       PRECACHE_URLS.push(`/assets/audio/${lang}/${filename}`);
     });
   }
 });
+
 
 // Helper: Tries to fetch a URL with multiple extension variations
 // Mirrors assetManager.ts logic exactly
@@ -121,8 +139,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// 4. FETCH: Network First, falling back to Cache
-// This ensures fresh content when online, but robust offline support.
+// 4. FETCH: Handle Requests
 self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests (like Supabase or Unsplash) for aggressive caching if needed,
   // but for this PWA, we want to cache app assets.
@@ -130,6 +147,38 @@ self.addEventListener('fetch', (event) => {
   // Skip POST requests (Supabase writes)
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+
+  // STRATEGY: Cache First for Audio Assets
+  // Why? Because we store canonical paths (day1.mp3) but fetch masked variations (.mpeg).
+  // If we try network first for .mp3, it will 404. We MUST check the cache first.
+  if (url.pathname.startsWith('/assets/audio/')) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          // Found in cache (masked successfully during install)
+          return cachedResponse;
+        }
+        // Not in cache? Try network (and cache if found)
+        return fetch(event.request).then((networkResponse) => {
+             // Valid response?
+            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+              return networkResponse;
+            }
+            // Clone and Cache
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+            return networkResponse;
+        });
+      })
+    );
+    return;
+  }
+
+  // STRATEGY: Network First for everything else (App Shell, API, etc.)
+  // This ensures fresh content when online, but robust offline support.
   event.respondWith(
     fetch(event.request)
       .then((response) => {
