@@ -1,9 +1,20 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import AppView from './pages/AppView';
 import LockScreen from './components/App/LockScreen';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+
+// Wrapper for LockScreen to handle navigation using React Router (SPA transition)
+const LockScreenWrapper = () => {
+  const navigate = useNavigate();
+  return (
+    <LockScreen
+      onUnlock={() => navigate('/app')}
+      childName={localStorage.getItem('childName') || 'your child'}
+    />
+  );
+};
 
 function App() {
   return (
@@ -15,12 +26,7 @@ function App() {
         <Route path="/terms" element={<Terms />} />
         <Route
           path="/locked"
-          element={
-            <LockScreen
-              onUnlock={() => window.location.href = '/app'}
-              childName={localStorage.getItem('childName') || 'your child'}
-            />
-          }
+          element={<LockScreenWrapper />}
         />
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
