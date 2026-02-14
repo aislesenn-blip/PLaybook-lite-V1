@@ -11,6 +11,7 @@ const HeroSection = () => {
   const [isIOS, setIsIOS] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showIOSInstall, setShowIOSInstall] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
     // Detect environment
@@ -19,11 +20,22 @@ const HeroSection = () => {
     setIsDesktop(!isMobile);
     setIsIOS(/iPhone|iPad|iPod/i.test(ua));
 
+    // Check if app is already running in standalone mode (installed)
+    const checkStandalone = () => {
+      const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+      setIsStandalone(isStandaloneMode);
+    };
+
+    checkStandalone();
+    window.addEventListener('resize', checkStandalone); // Handle orientation changes/updates
+
     // PWA Install Prompt
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
     });
+
+    return () => window.removeEventListener('resize', checkStandalone);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,7 +132,14 @@ const HeroSection = () => {
             <div className="text-xl font-medium text-emerald-400">Welcome to Playbook.</div>
 
             {/* Smart Download Logic */}
-            {isDesktop ? (
+            {isStandalone ? (
+              <a
+                href="/app"
+                className="flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
+              >
+                <DevicePhoneMobileIcon className="h-5 w-5" /> Open App
+              </a>
+            ) : isDesktop ? (
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-white p-2 rounded-lg">
                   <QRCode value={window.location.href} size={128} />
@@ -155,15 +174,15 @@ const HeroSection = () => {
                 <DevicePhoneMobileIcon className="h-5 w-5" /> Download App
               </button>
             ) : (
-               <button
-                disabled
-                className="flex items-center gap-2 rounded-full bg-slate-700 px-8 py-3 font-bold text-slate-400 cursor-not-allowed border border-white/10"
-              >
-                <DevicePhoneMobileIcon className="h-5 w-5" /> App Installed
-              </button>
+              // Fallback for Android without deferredPrompt (likely blocked or unsupported, but show generic install info)
+              <div className="flex flex-col items-center gap-2 text-center text-sm text-slate-300">
+                 <p>Tap options (⋮) and select "Add to Home Screen"</p>
+              </div>
             )}
 
-            <a href="/app" className="text-sm text-white/50 underline hover:text-white">Continue in Browser</a>
+            {!isStandalone && (
+              <a href="/app" className="text-sm text-white/50 underline hover:text-white">Continue in Browser</a>
+            )}
           </motion.div>
         )}
       </div>

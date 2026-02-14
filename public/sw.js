@@ -19,36 +19,62 @@ const PRECACHE_URLS = [
   '/assets/audio/system/try_again.mp3',
 ];
 
-// Helper to generate curriculum paths for Day 1-5
-const languages = ['en', 'sw'];
+// Helper to generate curriculum paths for Day 1-5 (Matching physical reality in assetManager.ts)
+const languages = ['en', 'sw', 'fr'];
 const phases = ['sponge', 'echo', 'hunter', 'hero'];
+
+// Phase mapping based on file structure (sponge -> sound, echo -> word, hunter -> phrase, hero -> hero)
+const phaseMap = {
+  sponge: 'sound',
+  echo: 'word',
+  hunter: 'phrase',
+  hero: 'hero',
+};
 
 languages.forEach(lang => {
   for (let i = 1; i <= 5; i++) {
     phases.forEach(phase => {
-      // e.g., /assets/audio/en/day1_sponge.mp3
-      PRECACHE_URLS.push(`/assets/audio/${lang}/day${i}_${phase}.mp3`);
+      const mappedPhase = phaseMap[phase] || phase;
+
+      // Default: Double extension as per physical file structure audit
+      let filename = `day${i}_${mappedPhase}.mp3.mp3`;
+
+      // CRITICAL EXCEPTION: English Day 1 Sound has .mpeg extension
+      if (lang === 'en' && i === 1 && mappedPhase === 'sound') {
+        filename = `day${i}_${mappedPhase}.mp3.mpeg`;
+      }
+
+      // Strict path construction
+      PRECACHE_URLS.push(`/assets/audio/${lang}/${filename}`);
     });
   }
 });
 
-// 2. INSTALL: Smart Cache
+// 2. INSTALL: Smart Cache with Graceful Degradation
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing... Pre-caching critical assets.');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // Use catch() to allow partial success (Graceful Degradation)
-      // If one audio file is missing, we don't want the whole install to fail.
-      return cache.addAll(PRECACHE_URLS).catch(err => {
-        console.warn('[SW] Some assets failed to cache (likely missing audio files):', err);
-        // We can try to cache critical app shell files strictly if the bulk fails
-        // But addAll is atomic (all or nothing), so typically we'd split them.
-        // For this task, we log and proceed. Ideally, we'd loop add() individually.
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // Instead of cache.addAll which fails atomically if ONE file is missing,
+      // we iterate and cache individually to ensure maximum success rate.
 
-        // Fallback: Cache at least the App Shell
-        const APP_SHELL = ['/', '/index.html', '/manifest.json', '/pwa-192x192.png'];
-        return cache.addAll(APP_SHELL);
+      const cachePromises = PRECACHE_URLS.map(async (url) => {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            console.warn(`[SW] Failed to fetch ${url} (Status: ${response.status}) - Skipping.`);
+            return;
+          }
+          return cache.put(url, response);
+        } catch (error) {
+          console.warn(`[SW] Network error caching ${url} - Skipping.`);
+          // Suppress error to allow installation to proceed
+        }
       });
+
+      // Wait for all attempts to finish (whether success or fail)
+      await Promise.all(cachePromises);
+      console.log('[SW] Pre-caching complete (with graceful degradation).');
     })
   );
   self.skipWaiting();
