@@ -13,23 +13,16 @@ def run(playwright):
     response = page.goto("http://localhost:5174/")
     print(f"Page load status: {response.status}")
 
-    # Wait for debug element
+    # Check if UI is restored (Look for "Give your child the confidence")
     try:
-        page.wait_for_selector("text==== DIAGNOSTIC REPORT ===", timeout=10000)
-        print("Diagnostic Header FOUND.")
-
-        # Capture the report content
-        report_text = page.locator("pre").text_content()
-        print("\n--- CAPTURED REPORT ---")
-        print(report_text)
-        print("-----------------------\n")
-
+        page.wait_for_selector("text=Give your child the confidence", timeout=5000)
+        print("UI Restored: Headline FOUND.")
     except:
-        print("Diagnostic Header NOT found.")
+        print("UI Restored: Headline NOT found.")
 
     # Take Screenshot
-    page.screenshot(path="verification_diagnostic.png")
-    print("Screenshot saved to verification_diagnostic.png")
+    page.screenshot(path="verification_restored.png")
+    print("Screenshot saved to verification_restored.png")
 
     browser.close()
 
