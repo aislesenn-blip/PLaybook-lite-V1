@@ -58,6 +58,24 @@ const HeroSection = () => {
     }
   };
 
+  const testAudio = async () => {
+    const paths = [
+      '/assets/audio/en/day1_sound.mp3',
+      '/assets/audio/en/day1_sound.mp3.mpeg',
+      '/assets/audio/en/day10_hero.mp3.mp3'
+    ];
+    let report = "DIAGNOSTIC REPORT:\n";
+    for (const path of paths) {
+      try {
+        const res = await fetch(path);
+        report += `${path}: ${res.status} (${res.ok ? 'OK' : 'FAIL'})\n`;
+      } catch (e) {
+        report += `${path}: NETWORK ERROR\n`;
+      }
+    }
+    alert(report);
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-slate-900 text-white">
       {/* Cinematic Background */}
@@ -79,6 +97,21 @@ const HeroSection = () => {
         >
           Playbook Lite
         </motion.div>
+
+        <h1 className="mb-4 text-center text-xl font-bold text-red-500 bg-white/10 p-2 rounded">
+          ⚠️ DEBUG MODE: VERSION 5.0 (AUDIO FIX APPLIED) ⚠️
+        </h1>
+        <div className="mb-4 flex flex-col items-center gap-2">
+           <button
+             onClick={testAudio}
+             className="bg-red-600 px-4 py-2 rounded text-white font-bold hover:bg-red-700"
+           >
+             TEST AUDIO PATHS
+           </button>
+           <div className="text-xs text-slate-400 font-mono">
+             Status: Standalone={String(isStandalone)}, Prompt={String(!!deferredPrompt)}
+           </div>
+        </div>
 
         {/* Headline */}
         <motion.h1
