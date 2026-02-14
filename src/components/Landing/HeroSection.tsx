@@ -131,7 +131,7 @@ const HeroSection = () => {
           >
             <div className="text-xl font-medium text-emerald-400">Welcome to Playbook.</div>
 
-            {/* Smart Download Logic */}
+            {/* Smart Download Logic with Bulletproof Fallbacks */}
             {isStandalone ? (
               <a
                 href="/app"
@@ -174,10 +174,12 @@ const HeroSection = () => {
                 <DevicePhoneMobileIcon className="h-5 w-5" /> Download App
               </button>
             ) : (
-              // Fallback for Android without deferredPrompt (likely blocked or unsupported, but show generic install info)
-              <div className="flex flex-col items-center gap-2 text-center text-sm text-slate-300">
-                 <p>Tap options (⋮) and select "Add to Home Screen"</p>
-              </div>
+               <button
+                onClick={() => alert("Tap the browser options menu (⋮), then select 'Add to Home Screen'.")}
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 py-3 font-bold text-slate-300 transition-all hover:bg-white/10 hover:text-white"
+              >
+                <PlusIcon className="h-5 w-5" /> How to Install
+              </button>
             )}
 
             {!isStandalone && (
