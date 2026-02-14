@@ -5,11 +5,11 @@
 const CACHE_NAME = 'playbook-assets-v1';
 
 // Base system files needed for any language
+// These are assumed to be in the `public/assets/audio/system/` folder
 const SYSTEM_ASSETS = [
   '/assets/audio/system/welcome_generic.mp3',
   '/assets/audio/system/success_high.mp3',
   '/assets/audio/system/try_again.mp3',
-  // Add other shared UI sounds here if needed
 ];
 
 // Generates the full list of URLs for a specific language (Day 1-15)
@@ -18,10 +18,20 @@ export const getLanguageAssets = (lang: string): string[] => {
   const phases = ['sponge', 'echo', 'hunter', 'hero'];
   const dayCount = 15; // Production Requirement: Level 1 (First 15 Days)
 
+  // Mapping language names to folder codes (if needed)
+  // 'english' -> 'en', 'swahili' -> 'sw', 'french' -> 'fr'
+  // But our curriculum usually uses 'en', 'sw', 'fr' directly or handled by soundManager.
+  // Assuming lang passed here matches the folder name (e.g. 'en' or 'english').
+  // Let's normalize it to be safe based on prompt context (folders are /en, /sw, /fr).
+  let langCode = lang;
+  if (lang === 'english') langCode = 'en';
+  if (lang === 'swahili') langCode = 'sw';
+  if (lang === 'french') langCode = 'fr';
+
   for (let i = 1; i <= dayCount; i++) {
     phases.forEach((phase) => {
       // e.g., /assets/audio/en/day1_sponge.mp3
-      assets.push(`/assets/audio/${lang}/day${i}_${phase}.mp3`);
+      assets.push(`/assets/audio/${langCode}/day${i}_${phase}.mp3`);
     });
   }
 
@@ -68,15 +78,19 @@ export const downloadAssets = async (
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+        // If 404, we warn but do NOT throw, so the loader completes.
+        console.warn(`[AssetManager] 404 Missing: ${url}`);
+        // We resolve successfully effectively skipping it to avoid blocking the user.
+        return;
       }
       // Store in cache
       await cache.put(url, response);
     } catch (error) {
-      console.warn(`[AssetManager] Error downloading ${url}:`, error);
-      // We could re-throw here to stop everything, or log and continue (graceful degradation).
-      // For "Silicon Valley" robustness, we usually want to know if critical assets fail.
-      throw error;
+      console.warn(`[AssetManager] Network Error for ${url}:`, error);
+      // Depending on strictness, we might throw here if offline, but
+      // if we want to let the user in even with partial assets, we just log.
+      // However, if offline completely, fetch throws.
+      // We will suppress individual errors to allow "partial success".
     } finally {
       completed++;
       const progress = Math.round((completed / total) * 100);
@@ -84,7 +98,7 @@ export const downloadAssets = async (
     }
   };
 
-  // Execute downloads in parallel with a concurrency limit if needed (browsers handle well usually)
-  // For simplicity and speed, Promise.all on the whole batch (browser limits active connections automatically)
+  // Execute downloads in parallel
+  // This ensures that even if some fail (404), the progress reaches 100%.
   await Promise.all(urls.map(fetchAndCache));
 };
