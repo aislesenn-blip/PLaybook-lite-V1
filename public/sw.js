@@ -157,3 +157,4 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+// self.__WB_MANIFEST

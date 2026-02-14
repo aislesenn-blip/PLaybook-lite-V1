@@ -5,12 +5,12 @@ def run(playwright):
     browser = playwright.chromium.launch(headless=True)
     page = browser.new_page()
 
-    print("Navigating to http://localhost:5174/")
+    print("Navigating to http://localhost:5173/")
 
     # Listen for console logs
     page.on("console", lambda msg: print(f"CONSOLE: {msg.text}"))
 
-    response = page.goto("http://localhost:5174/")
+    response = page.goto("http://localhost:5173/")
     print(f"Page load status: {response.status}")
 
     # Check if UI is restored (Look for "Give your child the confidence")
@@ -19,6 +19,17 @@ def run(playwright):
         print("UI Restored: Headline FOUND.")
     except:
         print("UI Restored: Headline NOT found.")
+
+    # Check SW
+    sw = page.evaluate("navigator.serviceWorker.controller")
+    print(f"Service Worker Controller: {sw}")
+
+    # Check /sw.js status
+    try:
+        res = page.request.get("http://localhost:5173/sw.js")
+        print(f"/sw.js status: {res.status}")
+    except:
+        print("/sw.js fetch failed")
 
     # Take Screenshot
     page.screenshot(path="verification_restored.png")
