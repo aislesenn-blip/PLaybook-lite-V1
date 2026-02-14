@@ -147,12 +147,19 @@ const HeroSection = () => {
                   </div>
                 )}
               </>
-            ) : (
+            ) : deferredPrompt ? (
                <button
                 onClick={handleInstall}
                 className="flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
               >
                 <DevicePhoneMobileIcon className="h-5 w-5" /> Download App
+              </button>
+            ) : (
+               <button
+                disabled
+                className="flex items-center gap-2 rounded-full bg-slate-700 px-8 py-3 font-bold text-slate-400 cursor-not-allowed border border-white/10"
+              >
+                <DevicePhoneMobileIcon className="h-5 w-5" /> App Installed
               </button>
             )}
 

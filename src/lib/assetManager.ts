@@ -19,16 +19,36 @@ export const getLanguageAssets = (lang: string): string[] => {
   const phases = ['sponge', 'echo', 'hunter', 'hero'];
   const dayCount = 15; // Production Requirement: Level 1 (First 15 Days)
 
-  // Mapping language names to folder codes (if needed)
+  // Mapping language names to folder codes
   let langCode = lang;
   if (lang === 'english') langCode = 'en';
   if (lang === 'swahili') langCode = 'sw';
   if (lang === 'french') langCode = 'fr';
 
+  // Phase mapping based on file structure
+  const phaseMap: Record<string, string> = {
+    sponge: 'sound',
+    echo: 'word',
+    hunter: 'phrase',
+    hero: 'hero',
+  };
+
   for (let i = 1; i <= dayCount; i++) {
     phases.forEach((phase) => {
-      // e.g., /assets/audio/en/day1_sponge.mp3
-      assets.push(`${BASE_URL}${langCode}/day${i}_${phase}.mp3`);
+      const mappedPhase = phaseMap[phase] || phase;
+
+      // NOTE: Files in public/assets/audio/ mostly have double extensions (.mp3.mp3).
+      // We must match the physical file names found in the directory.
+      let filename = `day${i}_${mappedPhase}.mp3.mp3`;
+
+      // CRITICAL: Handle specific file exceptions based on physical reality
+      // English Day 1 Sound has a unique extension (.mpeg)
+      if (langCode === 'en' && i === 1 && mappedPhase === 'sound') {
+        filename = `day${i}_${mappedPhase}.mp3.mpeg`;
+      }
+
+      // Construct strict path: /assets/audio/${langCode}/${filename}
+      assets.push(`${BASE_URL}${langCode}/${filename}`);
     });
   }
 
