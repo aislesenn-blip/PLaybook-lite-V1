@@ -5,9 +5,9 @@ import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
 // Service Worker for Playbook Lite v1.0
 // Strategy: Smart Pre-caching for Day 1-5 + Cache First for Audio
-// Status: OPTIMIZED FOR CLEAN .MP3 FILES & WORKBOX MANIFEST (v4-FINAL)
+// Status: OPTIMIZED FOR CLEAN .MP3 FILES & WORKBOX MANIFEST (v5-FINAL)
 
-const CACHE_NAME = 'playbook-assets-v4-FINAL';
+const CACHE_NAME = 'playbook-assets-v5-FINAL';
 
 // 1. CLEANUP & MANIFEST INJECTION
 // Wrapped in try-catch to prevent SW crash if manifest is malformed/empty

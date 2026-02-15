@@ -17,6 +17,27 @@ export default defineConfig({
         enabled: true,
         type: 'module',
       },
+      manifest: {
+        name: 'Playbook Lite',
+        short_name: 'Playbook',
+        description: 'Give your child the confidence to speak clearly.',
+        start_url: '/',
+        display: 'standalone',
+        background_color: '#0F172A',
+        theme_color: '#0F172A',
+        icons: [
+          {
+            src: '/pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: '/pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      },
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
