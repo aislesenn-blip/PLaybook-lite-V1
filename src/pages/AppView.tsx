@@ -172,7 +172,7 @@ const AppView = () => {
           </header>
 
           <div className="grid gap-4 pb-20 md:grid-cols-2 lg:grid-cols-3">
-            {currentCurriculum.days.map((day: any, index: number) => {
+            {currentCurriculum.days.map((day: any) => {
               const isCompleted = completedDays.includes(day.id);
               // Unlock logic: Day 1 always open. Subsequent days open if previous is completed.
               // const isLocked = index === 0 ? false : !completedDays.includes(currentCurriculum.days[index - 1].id);
