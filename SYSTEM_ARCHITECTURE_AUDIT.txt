@@ -1,0 +1,531 @@
+SYSTEM ARCHITECTURE AUDIT
+=========================
+
+SECTION 1: THE ANATOMY (FILE STRUCTURE)
+---------------------------------------
+./DATABASE_QH.md
+./DEBUG_REPORT.md
+./FULL_SYSTEM_DUMP.txt
+./README.md
+./SYSTEM_ARCHITECTURE.md
+./eslint.config.js
+./index.html
+./package-lock.json
+./package.json
+./postcss.config.js
+./public/app-icon.png
+./public/assets/audio/en/day10_hero.mp3
+./public/assets/audio/en/day10_phrase.mp3
+./public/assets/audio/en/day10_sound.mp3
+./public/assets/audio/en/day10_word.mp3
+./public/assets/audio/en/day11_hero.mp3
+./public/assets/audio/en/day11_phrase.mp3
+./public/assets/audio/en/day11_sound.mp3
+./public/assets/audio/en/day11_word.mp3
+./public/assets/audio/en/day12_hero.mp3
+./public/assets/audio/en/day12_phrase.mp3
+./public/assets/audio/en/day12_sound.mp3
+./public/assets/audio/en/day12_word.mp3
+./public/assets/audio/en/day13_hero.mp3
+./public/assets/audio/en/day13_phrase.mp3
+./public/assets/audio/en/day13_sound.mp3
+./public/assets/audio/en/day13_word.mp3
+./public/assets/audio/en/day14_hero.mp3
+./public/assets/audio/en/day14_phrase.mp3
+./public/assets/audio/en/day14_sound.mp3
+./public/assets/audio/en/day14_word.mp3
+./public/assets/audio/en/day15_hero.mp3
+./public/assets/audio/en/day15_phrase.mp3
+./public/assets/audio/en/day15_sound.mp3
+./public/assets/audio/en/day15_word.mp3
+./public/assets/audio/en/day1_hero.mp3
+./public/assets/audio/en/day1_phrase.mp3
+./public/assets/audio/en/day1_sound.mp3
+./public/assets/audio/en/day1_word.mp3
+./public/assets/audio/en/day2_hero.mp3
+./public/assets/audio/en/day2_phrase.mp3
+./public/assets/audio/en/day2_sound.mp3
+./public/assets/audio/en/day2_word.mp3
+./public/assets/audio/en/day3_hero.mp3
+./public/assets/audio/en/day3_phrase.mp3
+./public/assets/audio/en/day3_sound.mp3
+./public/assets/audio/en/day3_word.mp3
+./public/assets/audio/en/day4_hero.mp3
+./public/assets/audio/en/day4_phrase.mp3
+./public/assets/audio/en/day4_sound.mp3
+./public/assets/audio/en/day4_word.mp3
+./public/assets/audio/en/day5_hero.mp3
+./public/assets/audio/en/day5_phrase.mp3
+./public/assets/audio/en/day5_sound.mp3
+./public/assets/audio/en/day5_word.mp3
+./public/assets/audio/en/day6_hero.mp3
+./public/assets/audio/en/day6_phrase.mp3
+./public/assets/audio/en/day6_sound.mp3
+./public/assets/audio/en/day6_word.mp3
+./public/assets/audio/en/day7_hero.mp3
+./public/assets/audio/en/day7_phrase.mp3
+./public/assets/audio/en/day7_sound.mp3
+./public/assets/audio/en/day7_word.mp3
+./public/assets/audio/en/day8_hero.mp3
+./public/assets/audio/en/day8_phrase.mp3
+./public/assets/audio/en/day8_sound.mp3
+./public/assets/audio/en/day8_word.mp3
+./public/assets/audio/en/day9_hero.mp3
+./public/assets/audio/en/day9_phrase.mp3
+./public/assets/audio/en/day9_sound.mp3
+./public/assets/audio/en/day9_word.mp3
+./public/assets/audio/fr/day10_hero.mp3
+./public/assets/audio/fr/day10_phrase.mp3
+./public/assets/audio/fr/day10_sound.mp3
+./public/assets/audio/fr/day10_word.mp3
+./public/assets/audio/fr/day11_hero.mp3
+./public/assets/audio/fr/day11_phrase.mp3
+./public/assets/audio/fr/day11_sound.mp3
+./public/assets/audio/fr/day11_word.mp3
+./public/assets/audio/fr/day12_hero.mp3
+./public/assets/audio/fr/day12_phrase.mp3
+./public/assets/audio/fr/day12_sound.mp3
+./public/assets/audio/fr/day12_word.mp3
+./public/assets/audio/fr/day13_hero.mp3
+./public/assets/audio/fr/day13_phrase.mp3
+./public/assets/audio/fr/day13_sound.mp3
+./public/assets/audio/fr/day13_word.mp3
+./public/assets/audio/fr/day14_hero.mp3
+./public/assets/audio/fr/day14_phrase.mp3
+./public/assets/audio/fr/day14_sound.mp3
+./public/assets/audio/fr/day14_word.mp3
+./public/assets/audio/fr/day15_hero.mp3
+./public/assets/audio/fr/day15_phrase.mp3
+./public/assets/audio/fr/day15_sound.mp3
+./public/assets/audio/fr/day15_word.mp3
+./public/assets/audio/fr/day1_hero.mp3
+./public/assets/audio/fr/day1_phrase.mp3
+./public/assets/audio/fr/day1_sound.mp3
+./public/assets/audio/fr/day1_word.mp3
+./public/assets/audio/fr/day2_hero.mp3
+./public/assets/audio/fr/day2_phrase.mp3
+./public/assets/audio/fr/day2_sound.mp3
+./public/assets/audio/fr/day2_word.mp3
+./public/assets/audio/fr/day3_hero.mp3
+./public/assets/audio/fr/day3_phrase.mp3
+./public/assets/audio/fr/day3_sound.mp3
+./public/assets/audio/fr/day3_word.mp3
+./public/assets/audio/fr/day4_hero.mp3
+./public/assets/audio/fr/day4_phrase.mp3
+./public/assets/audio/fr/day4_sound.mp3
+./public/assets/audio/fr/day4_word.mp3
+./public/assets/audio/fr/day5_hero.mp3
+./public/assets/audio/fr/day5_phrase.mp3
+./public/assets/audio/fr/day5_sound.mp3
+./public/assets/audio/fr/day5_word.mp3
+./public/assets/audio/fr/day6_hero.mp3
+./public/assets/audio/fr/day6_phrase.mp3
+./public/assets/audio/fr/day6_sound.mp3
+./public/assets/audio/fr/day6_word.mp3
+./public/assets/audio/fr/day7_hero.mp3
+./public/assets/audio/fr/day7_phrase.mp3
+./public/assets/audio/fr/day7_sound.mp3
+./public/assets/audio/fr/day7_word.mp3
+./public/assets/audio/fr/day8_hero.mp3
+./public/assets/audio/fr/day8_phrase.mp3
+./public/assets/audio/fr/day8_sound.mp3
+./public/assets/audio/fr/day8_word.mp3
+./public/assets/audio/fr/day9_hero.mp3
+./public/assets/audio/fr/day9_phrase.mp3
+./public/assets/audio/fr/day9_sound.mp3
+./public/assets/audio/fr/day9_word.mp3
+./public/assets/audio/sw/day10_hero.mp3
+./public/assets/audio/sw/day10_phrase.mp3
+./public/assets/audio/sw/day10_sound.mp3
+./public/assets/audio/sw/day10_word.mp3
+./public/assets/audio/sw/day11_hero.mp3
+./public/assets/audio/sw/day11_phrase.mp3
+./public/assets/audio/sw/day11_sound.mp3
+./public/assets/audio/sw/day11_word.mp3
+./public/assets/audio/sw/day12_hero.mp3
+./public/assets/audio/sw/day12_phrase.mp3
+./public/assets/audio/sw/day12_sound.mp3
+./public/assets/audio/sw/day12_word.mp3
+./public/assets/audio/sw/day13_hero.mp3
+./public/assets/audio/sw/day13_phrase.mp3
+./public/assets/audio/sw/day13_sound.mp3
+./public/assets/audio/sw/day13_word.mp3
+./public/assets/audio/sw/day14_hero.mp3
+./public/assets/audio/sw/day14_phrase.mp3
+./public/assets/audio/sw/day14_sound.mp3
+./public/assets/audio/sw/day14_word.mp3
+./public/assets/audio/sw/day15_hero.mp3
+./public/assets/audio/sw/day15_phrase.mp3
+./public/assets/audio/sw/day15_sound.mp3
+./public/assets/audio/sw/day15_word.mp3
+./public/assets/audio/sw/day1_hero.mp3
+./public/assets/audio/sw/day1_phrase.mp3
+./public/assets/audio/sw/day1_sound.mp3
+./public/assets/audio/sw/day1_word.mp3
+./public/assets/audio/sw/day2_hero.mp3
+./public/assets/audio/sw/day2_phrase.mp3
+./public/assets/audio/sw/day2_sound.mp3
+./public/assets/audio/sw/day2_word.mp3
+./public/assets/audio/sw/day3_hero.mp3
+./public/assets/audio/sw/day3_phrase.mp3
+./public/assets/audio/sw/day3_sound.mp3
+./public/assets/audio/sw/day3_word.mp3
+./public/assets/audio/sw/day4_hero.mp3
+./public/assets/audio/sw/day4_phrase.mp3
+./public/assets/audio/sw/day4_sound.mp3
+./public/assets/audio/sw/day4_word.mp3
+./public/assets/audio/sw/day5_hero.mp3
+./public/assets/audio/sw/day5_phrase.mp3
+./public/assets/audio/sw/day5_sound.mp3
+./public/assets/audio/sw/day5_word.mp3
+./public/assets/audio/sw/day6_hero.mp3
+./public/assets/audio/sw/day6_phrase.mp3
+./public/assets/audio/sw/day6_sound.mp3
+./public/assets/audio/sw/day6_word.mp3
+./public/assets/audio/sw/day7_hero.mp3
+./public/assets/audio/sw/day7_phrase.mp3
+./public/assets/audio/sw/day7_sound.mp3
+./public/assets/audio/sw/day7_word.mp3
+./public/assets/audio/sw/day8_phrase.mp3
+./public/assets/audio/sw/day8_sound.mp3
+./public/assets/audio/sw/day8_word.mp3
+./public/assets/audio/sw/day9_hero.mp3
+./public/assets/audio/sw/day9_phrase.mp3
+./public/assets/audio/sw/day9_sound.mp3
+./public/assets/audio/sw/day9_word.mp3
+./public/assets/audio/system/locked_message.mp3
+./public/assets/audio/system/success_high.mp3
+./public/assets/audio/system/success_medium.mp3
+./public/assets/audio/system/try_again.mp3
+./public/assets/audio/system/welcome_generic.mp3
+./public/manifest.json
+./public/pwa-192x192.png
+./public/pwa-512x512.png
+./public/vite.svg
+./src/App.css
+./src/App.tsx
+./src/assets/react.svg
+./src/components/App/LanguageSetupModal.tsx
+./src/components/App/LessonContainer.tsx
+./src/components/App/LockScreen.tsx
+./src/components/App/Onboarding.tsx
+./src/components/App/PhaseEcho.tsx
+./src/components/App/PhaseHunter.tsx
+./src/components/App/PhasePerformer.tsx
+./src/components/App/PhaseSponge.tsx
+./src/components/App/PhysicsScene.tsx
+./src/components/Landing/FeatureCards.tsx
+./src/components/Landing/Footer.tsx
+./src/components/Landing/HeroSection.tsx
+./src/components/Landing/Testimonials.tsx
+./src/index.css
+./src/lib/assetManager.ts
+./src/lib/audioRecorder.ts
+./src/lib/curriculumData.ts
+./src/lib/imageFetcher.ts
+./src/lib/soundManager.ts
+./src/lib/subscriptionLock.ts
+./src/lib/supabaseClient.ts
+./src/lib/transcriptionService.ts
+./src/lib/utils.ts
+./src/main.tsx
+./src/pages/AppView.tsx
+./src/pages/Home.tsx
+./src/pages/Privacy.tsx
+./src/pages/Terms.tsx
+./src/sw.js
+./src/vite-env.d.ts
+./src/workers/whisper.worker.ts
+./tailwind.config.js
+./tsconfig.app.json
+./tsconfig.json
+./tsconfig.node.json
+./vercel.json
+./verification_restored.png
+./verification_script.py
+./verification_sw.png
+./vite.config.ts
+
+SECTION 2: THE BRAIN (CONFIGURATION)
+------------------------------------
+vite.config.ts:
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [
+    react(),
+    VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
+      registerType: 'autoUpdate',
+      injectRegister: 'auto'
+    })
+  ],
+})
+
+tsconfig.json:
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+
+package.json:
+{
+  "name": "app-temp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@supabase/supabase-js": "^2.95.3",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/matter-js": "^0.20.2",
+    "@xenova/transformers": "^2.17.2",
+    "autoprefixer": "^10.4.24",
+    "canvas-confetti": "^1.9.4",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.34.0",
+    "matter-js": "^0.20.0",
+    "postcss": "^8.5.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-qr-code": "^2.0.18",
+    "react-router-dom": "^7.13.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^3.4.19"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.48.0",
+    "vite": "^7.3.1",
+    "vite-plugin-pwa": "^1.2.0",
+    "workbox-cacheable-response": "^7.4.0",
+    "workbox-core": "^7.4.0",
+    "workbox-precaching": "^7.4.0",
+    "workbox-routing": "^7.4.0",
+    "workbox-strategies": "^7.4.0"
+  }
+}
+
+SECTION 3: THE HEART (ENTRY POINTS)
+-----------------------------------
+index.html:
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/pwa-192x192.png" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#000000" />
+    <title>Playbook Lite</title>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json" />
+  </head>
+  <body class="bg-[#F8FAFC] text-[#0F172A] antialiased overscroll-none">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+src/main.tsx:
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './index.css'
+import { registerSW } from 'virtual:pwa-register'
+
+console.log("App Version: v2-CLEAN")
+
+// Force explicit registration
+const updateSW = registerSW({
+  onNeedRefresh() {
+    if (confirm('New content available. Reload?')) {
+      updateSW(true)
+    }
+  },
+  onOfflineReady() {
+    console.log('App is ready for offline use.')
+  },
+})
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
+
+public/manifest.json:
+{
+  "name": "Playbook Lite",
+  "short_name": "Playbook",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png?v=2",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png?v=2",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
+SECTION 4: THE NERVOUS SYSTEM (ROUTING & STATE)
+-----------------------------------------------
+src/App.tsx:
+import HeroSection from './components/Landing/HeroSection';
+
+function App() {
+  return <HeroSection />;
+}
+
+export default App;
+
+src/sw.js:
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
+import { registerRoute } from 'workbox-routing';
+import { CacheFirst } from 'workbox-strategies';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+
+// Service Worker for Playbook Lite v1.0
+// Strategy: Smart Pre-caching for Day 1-5 + Cache First for Audio
+// Status: OPTIMIZED FOR CLEAN .MP3 FILES & WORKBOX MANIFEST (v3-FINAL)
+
+const CACHE_NAME = 'playbook-assets-v3-FINAL';
+
+// 1. CLEANUP & MANIFEST INJECTION
+// Wrapped in try-catch to prevent SW crash if manifest is malformed/empty
+try {
+  cleanupOutdatedCaches();
+  // This handles the App Shell (JS, CSS, Index.html) generated by Vite
+  // eslint-disable-next-line no-undef
+  precacheAndRoute(self.__WB_MANIFEST);
+} catch (e) {
+  console.error('[SW] Failed to precache manifest. App Shell may be offline-only.', e);
+}
+
+// 2. AUDIO CACHING STRATEGY (Workbox Route)
+// Matches clean .mp3 files and caches them in 'playbook-assets-v3-FINAL'
+registerRoute(
+  ({ request }) => request.url.endsWith('.mp3'),
+  new CacheFirst({
+    cacheName: CACHE_NAME,
+    plugins: [
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+    ],
+  })
+);
+
+// 3. MANUAL INSTALL: PRE-CACHE CRITICAL AUDIO
+// Ensures Day 1-5 and System Audio are available immediately
+const PRECACHE_AUDIO_URLS = [
+  // System Audio
+  '/assets/audio/system/welcome_generic.mp3',
+  '/assets/audio/system/success_high.mp3',
+  '/assets/audio/system/success_medium.mp3',
+  '/assets/audio/system/try_again.mp3',
+  '/assets/audio/system/locked_message.mp3',
+];
+
+// Helper to generate curriculum paths for Day 1-5
+const languages = ['en', 'sw', 'fr'];
+const phases = ['sponge', 'echo', 'hunter', 'hero'];
+const phaseMap = {
+  sponge: 'sound',
+  echo: 'word',
+  hunter: 'phrase',
+  hero: 'hero',
+};
+
+languages.forEach(lang => {
+  for (let i = 1; i <= 5; i++) {
+    phases.forEach(phase => {
+      const mappedPhase = phaseMap[phase] || phase;
+      const filename = `day${i}_${mappedPhase}.mp3`;
+      PRECACHE_AUDIO_URLS.push(`/assets/audio/${lang}/${filename}`);
+    });
+  }
+});
+
+self.addEventListener('install', (event) => {
+  // CRITICAL: Force the new SW to take over immediately
+  self.skipWaiting();
+  console.log('[SW] Installing... Pre-caching critical audio assets.');
+
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cachePromises = PRECACHE_AUDIO_URLS.map(async (url) => {
+        try {
+          // Check if already cached
+          const match = await cache.match(url);
+          if (match) return;
+
+          const response = await fetch(url);
+          if (response.ok) {
+            return cache.put(url, response);
+          } else {
+             console.warn(`[SW] Failed to fetch ${url} (Status: ${response.status})`);
+          }
+        } catch (error) {
+          console.warn(`[SW] Network error caching ${url} - Skipping.`);
+        }
+      });
+
+      await Promise.all(cachePromises);
+      console.log('[SW] Audio pre-caching complete.');
+    })
+  );
+});
+
+// 4. ACTIVATE: Cleanup Old Custom Caches (v1, v2)
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          // Delete old 'playbook-assets-v1', 'v2-CLEAN', or mismatching custom caches
+          // Preserves 'playbook-assets-v3-FINAL' and Workbox internal caches
+          if (cache !== CACHE_NAME && !cache.includes('workbox-precache')) {
+            console.log('[SW] Deleting old cache:', cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
+});
