@@ -49,7 +49,7 @@ self.addEventListener('message', async (event: MessageEvent) => {
 
       // Run transcription
       const output = await transcriber(audio, {
-        language: 'english', // Can be dynamic if we pass language code
+        language: message.language || 'english',
         task: 'transcribe',
       });
 

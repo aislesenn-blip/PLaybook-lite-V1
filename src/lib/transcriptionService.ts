@@ -36,10 +36,10 @@ export class TranscriptionService {
     this.worker?.postMessage({ type: 'LOAD' });
   }
 
-  transcribe(audioData: Float32Array, onResult: (text: string) => void, onError?: (err: string) => void) {
+  transcribe(audioData: Float32Array, language: string, onResult: (text: string) => void, onError?: (err: string) => void) {
     this.onResult = onResult;
     this.onError = onError || null;
-    this.worker?.postMessage({ type: 'TRANSCRIBE', audio: audioData });
+    this.worker?.postMessage({ type: 'TRANSCRIBE', audio: audioData, language });
   }
 
   terminate() {

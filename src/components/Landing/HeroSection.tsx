@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { saveParentData } from '../../lib/supabaseClient';
 import { ArrowRightIcon, DevicePhoneMobileIcon, StarIcon, LockClosedIcon, PlusIcon, ArrowUpOnSquareIcon } from '@heroicons/react/24/solid';
 import QRCode from 'react-qr-code';
@@ -133,12 +134,12 @@ const HeroSection = () => {
 
             {/* Smart Download Logic with Bulletproof Fallbacks */}
             {isStandalone ? (
-              <a
-                href="/app"
+              <Link
+                to="/app"
                 className="flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
               >
                 <DevicePhoneMobileIcon className="h-5 w-5" /> Open App
-              </a>
+              </Link>
             ) : isDesktop ? (
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-white p-2 rounded-lg">
@@ -183,7 +184,7 @@ const HeroSection = () => {
             )}
 
             {!isStandalone && (
-              <a href="/app" className="text-sm text-white/50 underline hover:text-white">Continue in Browser</a>
+              <Link to="/app" className="text-sm text-white/50 underline hover:text-white">Continue in Browser</Link>
             )}
           </motion.div>
         )}

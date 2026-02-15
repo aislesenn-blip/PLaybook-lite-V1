@@ -13,14 +13,13 @@ export default defineConfig({
       // Critical: Ensures updates are handled automatically without user prompts
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      // Workbox configuration to ensure clean updates
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
-        cleanupOutdatedCaches: true
-      },
       devOptions: {
-        enabled: true
+        enabled: true,
+        type: 'module',
+      },
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
       }
     })
   ],

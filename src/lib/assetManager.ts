@@ -3,7 +3,7 @@
 // Simplified Loader: Standard .mp3 files only.
 
 // UPDATED: Sync with sw.js to prevent deletion loop
-const CACHE_NAME = 'playbook-assets-v3-FINAL';
+const CACHE_NAME = 'playbook-assets-v4-FINAL';
 const BASE_URL = '/assets/audio/';
 
 // Base system files needed for any language
