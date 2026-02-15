@@ -5,7 +5,7 @@ import { curriculum } from '../lib/curriculumData';
 import Onboarding from '../components/App/Onboarding';
 import LessonContainer from '../components/App/LessonContainer';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircleIcon, PlayIcon, LockClosedIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon, PlayIcon, LockClosedIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
 
 const AppView = () => {
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ const AppView = () => {
   const [lang, setLang] = useState<string>('english');
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [currentDay, setCurrentDay] = useState<any | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     // 1. Check Lock Status
@@ -57,6 +58,12 @@ const AppView = () => {
     }
   };
 
+  const handleLanguageSwitch = (newLang: string) => {
+      setLang(newLang);
+      localStorage.setItem('childLang', newLang);
+      setShowSettings(false);
+  };
+
   // Helper for Greeting
   const getGreeting = () => {
     switch (lang) {
@@ -64,6 +71,15 @@ const AppView = () => {
       case 'french': return 'Bonjour';
       default: return 'Hello';
     }
+  };
+
+  // Helper for Flag
+  const getFlag = (l: string) => {
+      switch(l) {
+          case 'swahili': return '🇹🇿';
+          case 'french': return '🇫🇷';
+          default: return '🇬🇧';
+      }
   };
 
   if (loading) return null;
@@ -108,8 +124,50 @@ const AppView = () => {
               </h1>
               <p className="mt-1 text-slate-500">{currentCurriculum.level_name}</p>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 text-xl font-bold text-slate-600 shadow-sm">
-              {childName ? childName[0].toUpperCase() : 'C'}
+
+            <div className="relative">
+                <button
+                    onClick={() => setShowSettings(!showSettings)}
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-200 text-xl font-bold text-slate-600 shadow-sm transition-transform active:scale-95"
+                >
+                  {childName ? childName[0].toUpperCase() : 'C'}
+                </button>
+
+                <AnimatePresence>
+                    {showSettings && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            className="absolute right-0 top-14 z-50 w-48 rounded-2xl bg-white p-2 shadow-xl ring-1 ring-black/5"
+                        >
+                            <div className="mb-2 px-2 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">Language</div>
+                            {['english', 'swahili', 'french'].map((l) => (
+                                <button
+                                    key={l}
+                                    onClick={() => handleLanguageSwitch(l)}
+                                    className={`flex w-full items-center justify-between rounded-xl px-4 py-2 text-sm font-medium transition-colors ${
+                                        lang === l ? 'bg-brand/10 text-brand' : 'text-slate-600 hover:bg-slate-50'
+                                    }`}
+                                >
+                                    <span className="capitalize">{l}</span>
+                                    <span>{getFlag(l)}</span>
+                                </button>
+                            ))}
+                             <div className="mt-2 border-t border-slate-100 pt-2">
+                                <button
+                                    onClick={() => {
+                                        localStorage.clear();
+                                        window.location.reload();
+                                    }}
+                                    className="flex w-full items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50"
+                                >
+                                    <Cog6ToothIcon className="h-4 w-4" /> Reset App
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
           </header>
 
