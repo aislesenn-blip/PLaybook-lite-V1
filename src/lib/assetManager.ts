@@ -2,7 +2,8 @@
 // Handles dynamic pre-caching of language packs for Day 1-15 + System Audio.
 // Simplified Loader: Standard .mp3 files only.
 
-const CACHE_NAME = 'playbook-assets-v1';
+// UPDATED: Sync with sw.js to prevent deletion loop
+const CACHE_NAME = 'playbook-assets-v2-CLEAN';
 const BASE_URL = '/assets/audio/';
 
 // Base system files needed for any language
@@ -11,7 +12,9 @@ const BASE_URL = '/assets/audio/';
 const SYSTEM_ASSETS = [
   `${BASE_URL}system/welcome_generic.mp3`,
   `${BASE_URL}system/success_high.mp3`,
+  `${BASE_URL}system/success_medium.mp3`, // Added
   `${BASE_URL}system/try_again.mp3`,
+  `${BASE_URL}system/locked_message.mp3`, // Added
 ];
 
 // Generates the full list of CANONICAL URLs for a specific language (Day 1-15)
