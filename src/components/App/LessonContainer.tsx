@@ -5,6 +5,7 @@ import PhaseEcho from './PhaseEcho';
 import PhaseHunter from './PhaseHunter';
 import PhasePerformer from './PhasePerformer';
 import PhysicsScene from './PhysicsScene'; // Import PhysicsScene
+import TracingWarmup from './TracingWarmup';
 
 interface LessonContainerProps {
   day: any;
@@ -13,10 +14,10 @@ interface LessonContainerProps {
   onExit: () => void;
 }
 
-type Phase = 'sponge' | 'echo' | 'hunter' | 'performer';
+type Phase = 'warmup' | 'sponge' | 'echo' | 'hunter' | 'performer';
 
 const LessonContainer: React.FC<LessonContainerProps> = ({ day, lang, onLessonComplete, onExit }) => {
-  const [phase, setPhase] = useState<Phase>('sponge');
+  const [phase, setPhase] = useState<Phase>('warmup');
   const [showPhysics, setShowPhysics] = useState(false);
 
   useEffect(() => {
@@ -31,6 +32,8 @@ const LessonContainer: React.FC<LessonContainerProps> = ({ day, lang, onLessonCo
   const handleNextPhase = () => {
     setPhase((currentPhase) => {
       switch (currentPhase) {
+        case 'warmup':
+          return 'sponge';
         case 'sponge':
           return 'echo';
         case 'echo':
@@ -99,6 +102,9 @@ const LessonContainer: React.FC<LessonContainerProps> = ({ day, lang, onLessonCo
         >
           {/* Re-enable pointer events for the actual phase content wrapper */}
           <div className="h-full w-full pointer-events-auto">
+            {phase === 'warmup' && (
+              <TracingWarmup dayId={day.id} onComplete={handleNextPhase} />
+            )}
             {phase === 'sponge' && (
               <PhaseSponge day={day} lang={lang} onComplete={handleNextPhase} />
             )}
