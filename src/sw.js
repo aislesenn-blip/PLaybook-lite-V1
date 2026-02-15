@@ -113,6 +113,7 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// Injection point for Workbox
+// Injection point for Workbox (REQUIRED for Vite Build)
 // eslint-disable-next-line no-unused-vars
-console.log('Workbox Manifest Loaded');
+const manifest = self.__WB_MANIFEST;
+console.log('Workbox Manifest Loaded', manifest);
