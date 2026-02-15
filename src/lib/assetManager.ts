@@ -1,6 +1,6 @@
 // Asset Manager for Playbook Lite v1.0
 // Handles dynamic pre-caching of language packs for Day 1-15 + System Audio.
-// "Bulletproof" Loader: Tries multiple file extensions recursively until it finds the asset.
+// Simplified Loader: Standard .mp3 files only.
 
 const CACHE_NAME = 'playbook-assets-v1';
 const BASE_URL = '/assets/audio/';
@@ -15,7 +15,7 @@ const SYSTEM_ASSETS = [
 ];
 
 // Generates the full list of CANONICAL URLs for a specific language (Day 1-15)
-// We return clean .mp3 paths. The loader will handle the messy extensions.
+// We return clean .mp3 paths.
 export const getLanguageAssets = (lang: string): string[] => {
   const assets: string[] = [...SYSTEM_ASSETS];
   const phases = ['sponge', 'echo', 'hunter', 'hero'];
@@ -70,35 +70,8 @@ export const checkMissingAssets = async (urls: string[]): Promise<string[]> => {
   return missing;
 };
 
-// Helper: Tries to fetch a URL with multiple extension variations
-// Returns the Response if found, or null if all fail.
-const fetchWithFallback = async (canonicalUrl: string): Promise<Response | null> => {
-  // Variations to try, in order of likelihood based on audit
-  const variations = [
-    canonicalUrl,                  // 1. Try clean .mp3
-    `${canonicalUrl}.mp3`,         // 2. Try .mp3.mp3
-    `${canonicalUrl}.mpeg`,        // 3. Try .mp3.mpeg (English Day 1 Sound)
-    canonicalUrl.replace('.mp3', '.mpeg'), // 4. Try replacing extension entirely
-    canonicalUrl.replace('.mp3', '.mp4'),  // 5. Try video container (.mp4) - CRITICAL FIX
-    `${canonicalUrl}.mp4`          // 6. Try .mp3.mp4 (Unlikely but safe)
-  ];
-
-  for (const url of variations) {
-    try {
-      const response = await fetch(url);
-      if (response.ok) {
-        console.log(`[AssetManager] Found: ${url}`);
-        return response;
-      }
-    } catch (e) {
-      // Ignore network errors for variations, try next
-    }
-  }
-  return null;
-};
-
 // Downloads missing assets and stores them in the persistent cache
-// USES THE TRY-CHAIN STRATEGY
+// USES SIMPLE FETCH -> CACHE STRATEGY
 export const downloadAssets = async (
   urls: string[],
   onProgress: (progress: number) => void
@@ -113,24 +86,20 @@ export const downloadAssets = async (
   const total = urls.length;
 
   // Function to process a single URL
-  const fetchAndCache = async (canonicalUrl: string) => {
+  const fetchAndCache = async (url: string) => {
     try {
-      // 1. Try to find the file using the robust fallback logic
-      const response = await fetchWithFallback(canonicalUrl);
+      // 1. Fetch directly
+      const response = await fetch(url);
 
-      if (!response) {
-        console.warn(`[AssetManager] Critical 404: Could not find ANY variation for ${canonicalUrl}`);
-        // We resolve successfully effectively skipping it to avoid blocking the user.
-        return;
+      if (response.ok) {
+        // 2. Store in cache
+        await cache.put(url, response);
+      } else {
+        console.warn(`[AssetManager] Failed to fetch: ${url}`);
       }
 
-      // 2. Store in cache under the CANONICAL URL
-      // This "masks" the messy extension from the app.
-      // The app asks for "day1_sound.mp3", checking the cache, and finds this response.
-      await cache.put(canonicalUrl, response);
-
     } catch (error) {
-      console.warn(`[AssetManager] Network Error for ${canonicalUrl}:`, error);
+      console.warn(`[AssetManager] Network Error for ${url}:`, error);
     } finally {
       completed++;
       const progress = Math.round((completed / total) * 100);
@@ -139,6 +108,5 @@ export const downloadAssets = async (
   };
 
   // Execute downloads in parallel
-  // This ensures that even if some fail (404), the progress reaches 100%.
   await Promise.all(urls.map(fetchAndCache));
 };
