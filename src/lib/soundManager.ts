@@ -2,12 +2,26 @@
 
 export const playSound = async (lang: string, dayId: number, type: 'sponge' | 'echo' | 'hunter' | 'performer' | 'success' | 'try_again') => {
   let path = '';
+
+  // Language Code Mapping
+  let langCode = lang;
+  if (lang === 'english') langCode = 'en';
+  if (lang === 'swahili') langCode = 'sw';
+  if (lang === 'french') langCode = 'fr';
+
   if (type === 'success') {
-    path = `/src/assets/audio/success.mp3`;
+    path = `/assets/audio/system/success_medium.mp3`;
   } else if (type === 'try_again') {
-    path = `/src/assets/audio/try_again.mp3`;
+    path = `/assets/audio/system/try_again.mp3`;
   } else {
-    path = `/src/assets/audio/${lang}/day${dayId}_${type}.mp3`;
+    // Phase Mapping (Must match file system: sound, word, phrase, hero)
+    let filenamePart: string = type;
+    if (type === 'sponge') filenamePart = 'sound';
+    if (type === 'echo') filenamePart = 'word';
+    if (type === 'hunter') filenamePart = 'phrase';
+    if (type === 'performer') filenamePart = 'hero';
+
+    path = `/assets/audio/${langCode}/day${dayId}_${filenamePart}.mp3`;
   }
 
   console.log(`Playing sound: ${path}`);

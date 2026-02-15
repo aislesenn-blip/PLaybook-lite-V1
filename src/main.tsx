@@ -4,7 +4,7 @@ import App from './App'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'
 
-console.log("App Version: v3-FINAL-UNBLOCKED")
+console.log("App Version: v4-FINAL-ROUTER-FIXED")
 
 // Force immediate registration without any user interaction or blocking dialogs
 registerSW({ immediate: true })

@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const Footer = () => {
   return (
     <footer className="w-full bg-slate-900 py-12 text-center text-slate-400">
@@ -6,8 +8,8 @@ const Footer = () => {
           &copy; {new Date().getFullYear()} Playbook Lite. All Rights Reserved.
         </div>
         <div className="flex gap-6 text-sm font-medium">
-          <a href="/privacy" className="hover:text-amber-500 transition-colors">Privacy Policy</a>
-          <a href="/terms" className="hover:text-amber-500 transition-colors">Terms of Service</a>
+          <Link to="/privacy" className="hover:text-amber-500 transition-colors">Privacy Policy</Link>
+          <Link to="/terms" className="hover:text-amber-500 transition-colors">Terms of Service</Link>
           <a
             href="https://wa.me/255745780988"
             target="_blank"

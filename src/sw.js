@@ -5,9 +5,9 @@ import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
 // Service Worker for Playbook Lite v1.0
 // Strategy: Smart Pre-caching for Day 1-5 + Cache First for Audio
-// Status: OPTIMIZED FOR CLEAN .MP3 FILES & WORKBOX MANIFEST (v3-FINAL)
+// Status: OPTIMIZED FOR CLEAN .MP3 FILES & WORKBOX MANIFEST (v4-FINAL)
 
-const CACHE_NAME = 'playbook-assets-v3-FINAL';
+const CACHE_NAME = 'playbook-assets-v4-FINAL';
 
 // 1. CLEANUP & MANIFEST INJECTION
 // Wrapped in try-catch to prevent SW crash if manifest is malformed/empty
@@ -21,7 +21,7 @@ try {
 }
 
 // 2. AUDIO CACHING STRATEGY (Workbox Route)
-// Matches clean .mp3 files and caches them in 'playbook-assets-v3-FINAL'
+// Matches clean .mp3 files and caches them in 'playbook-assets-v4-FINAL'
 registerRoute(
   ({ request }) => request.url.endsWith('.mp3'),
   new CacheFirst({
@@ -47,7 +47,7 @@ const PRECACHE_AUDIO_URLS = [
 
 // Helper to generate curriculum paths for Day 1-5
 const languages = ['en', 'sw', 'fr'];
-const phases = ['sponge', 'echo', 'hunter', 'hero'];
+const phases = ['sponge', 'echo', 'hunter', 'hero']; // Note: 'hero' is phase name for Performer phase but file uses 'hero'
 const phaseMap = {
   sponge: 'sound',
   echo: 'word',
@@ -95,14 +95,13 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// 4. ACTIVATE: Cleanup Old Custom Caches (v1, v2)
+// 4. ACTIVATE: Cleanup Old Custom Caches (v1, v2, v3)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
-          // Delete old 'playbook-assets-v1', 'v2-CLEAN', or mismatching custom caches
-          // Preserves 'playbook-assets-v3-FINAL' and Workbox internal caches
+          // Delete old 'playbook-assets-*' caches, preserving 'playbook-assets-v4-FINAL'
           if (cache !== CACHE_NAME && !cache.includes('workbox-precache')) {
             console.log('[SW] Deleting old cache:', cache);
             return caches.delete(cache);

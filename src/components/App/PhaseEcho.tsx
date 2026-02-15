@@ -84,6 +84,7 @@ const PhaseEcho: React.FC<PhaseEchoProps> = ({ day, lang, onComplete }) => {
 
     transcriptionService.transcribe(
       audioData,
+      lang,
       (text) => {
         console.log('Transcribed:', text);
 
