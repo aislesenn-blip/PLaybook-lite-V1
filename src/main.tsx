@@ -4,10 +4,9 @@ import App from './App'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'
 
-console.log("App Version: v3-FINAL-IMMEDIATE")
+console.log("App Version: v3-FINAL-UNBLOCKED")
 
-// Force explicit, immediate registration without user prompt
-// This fixes the "White Screen" or "Cut in Half" issue caused by the confirm dialog blocking the main thread
+// Force immediate registration without any user interaction or blocking dialogs
 registerSW({ immediate: true })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
