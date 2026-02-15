@@ -2,7 +2,7 @@
 // Strategy: Smart Pre-caching for Day 1-5 + Cache First for Audio
 // Status: OPTIMIZED FOR CLEAN .MP3 FILES
 
-const CACHE_NAME = 'playbook-assets-v1';
+const CACHE_NAME = 'playbook-assets-v2-CLEAN';
 
 // 1. DEFINE PRECACHE URLS (CRITICAL BATCH)
 // Includes App Shell, System Audio, and Content for Days 1-5

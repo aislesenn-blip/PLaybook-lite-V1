@@ -4,6 +4,8 @@ import App from './App'
 import './index.css'
 import { registerSW } from 'virtual:pwa-register'
 
+console.log("App Version: v2-CLEAN")
+
 // Force explicit registration
 const updateSW = registerSW({
   onNeedRefresh() {
