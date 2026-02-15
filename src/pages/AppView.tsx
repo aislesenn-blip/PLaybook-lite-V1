@@ -175,7 +175,8 @@ const AppView = () => {
             {currentCurriculum.days.map((day: any, index: number) => {
               const isCompleted = completedDays.includes(day.id);
               // Unlock logic: Day 1 always open. Subsequent days open if previous is completed.
-              const isLocked = index === 0 ? false : !completedDays.includes(currentCurriculum.days[index - 1].id);
+              // const isLocked = index === 0 ? false : !completedDays.includes(currentCurriculum.days[index - 1].id);
+              const isLocked = false; // UNLOCKED FOR TESTING
 
               return (
                 <motion.button

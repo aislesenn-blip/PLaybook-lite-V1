@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
 // --- Configuration ---
-const STROKE_WIDTH = 8; // Slightly thinner for elegance
+const STROKE_WIDTH = 16; // Thicker for easier tracing
 const PATH_COLOR = '#0ea5e9'; // sky-500
 const PATH_BG_COLOR = '#e2e8f0'; // slate-200
-const SUCCESS_THRESHOLD = 0.96;
+const SUCCESS_THRESHOLD = 0.85; // Lower threshold (85%)
 
 // Map Day 1-15 to Letters A-O
 // Single-stroke approximations where possible.
@@ -89,8 +89,8 @@ const TracingWarmup: React.FC<TracingWarmupProps> = ({ dayId, onComplete }) => {
 
     // Logic: Find closest point on path ahead of current progress
     const currentLen = progress * pathLength;
-    const searchRadius = 15; // Tolerance in SVG units
-    const stepSize = 3; // How much we can advance per frame
+    const searchRadius = 35; // Increased tolerance (35 units)
+    const stepSize = 5; // Faster tracing allowed
 
     // Current point on path
     const pointAtCurrent = pathRef.current.getPointAtLength(currentLen);
