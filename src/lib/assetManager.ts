@@ -3,7 +3,7 @@
 // Simplified Loader: Standard .mp3 files only.
 
 // UPDATED: Sync with sw.js to prevent deletion loop
-const CACHE_NAME = 'playbook-assets-v2-CLEAN';
+const CACHE_NAME = 'playbook-assets-v3-FINAL';
 const BASE_URL = '/assets/audio/';
 
 // Base system files needed for any language
@@ -92,7 +92,8 @@ export const downloadAssets = async (
   const fetchAndCache = async (url: string) => {
     try {
       // 1. Fetch directly
-      const response = await fetch(url);
+      // UPDATED: Using CORS mode for safety with CDN/Vercel
+      const response = await fetch(url, { mode: 'cors' });
 
       if (response.ok) {
         // 2. Store in cache
