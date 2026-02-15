@@ -10,8 +10,18 @@ export default defineConfig({
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.js',
+      // Auto Update Strategy: Critical for PWA stability
       registerType: 'autoUpdate',
-      injectRegister: 'auto'
+      injectRegister: 'auto',
+      // Ensure the service worker is activated immediately
+      workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true
+      },
+      devOptions: {
+        enabled: true
+      }
     })
   ],
 })

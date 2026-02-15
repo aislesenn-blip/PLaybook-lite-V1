@@ -78,7 +78,7 @@ self.addEventListener('install', (event) => {
           const match = await cache.match(url);
           if (match) return;
 
-          const response = await fetch(url);
+          const response = await fetch(url, { mode: 'cors' }); // Safety
           if (response.ok) {
             return cache.put(url, response);
           } else {
